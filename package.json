@@ -1,0 +1,26 @@
+{
+  "name": "revenue-leakage-advisor",
+  "version": "1.0.0",
+  "description": "Smart Revenue Leakage Advisor - AI-Powered Revenue Protection System",
+  "author": "Expert Developer Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/revenue-leakage-advisor.git"
+  },
+  "keywords": [
+    "revenue",
+    "business-analytics",
+    "ai",
+    "fastapi",
+    "react",
+    "data-science",
+    "financial-analysis"
+  ],
+  "scripts": {
+    "install-all": "cd backend && pip install -r requirements.txt && cd ../frontend && npm install",
+    "start-backend": "cd backend && python main.py",
+    "start-frontend": "cd frontend && npm run dev",
+    "build-frontend": "cd frontend && npm run build"
+  }
+}
