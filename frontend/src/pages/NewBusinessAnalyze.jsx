@@ -262,13 +262,13 @@ const NewBusinessAnalyze = () => {
               <div className="bg-green-50 p-4 rounded-lg">
                 <p className="text-sm text-green-600 mb-1">Expected Revenue</p>
                 <p className="text-2xl font-bold text-green-900">
-                  ${analysisResult.financial_summary.expected_monthly_revenue.toLocaleString()}
+                  ₹{analysisResult.financial_summary.expected_monthly_revenue.toLocaleString()}
                 </p>
               </div>
               <div className="bg-red-50 p-4 rounded-lg">
                 <p className="text-sm text-red-600 mb-1">Potential Loss</p>
                 <p className="text-2xl font-bold text-red-900">
-                  ${analysisResult.total_potential_loss.toLocaleString()}
+                  ₹{analysisResult.total_potential_loss.toLocaleString()}
                 </p>
               </div>
               <div className="bg-yellow-50 p-4 rounded-lg">

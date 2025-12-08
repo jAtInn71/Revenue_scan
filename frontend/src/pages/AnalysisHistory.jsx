@@ -150,7 +150,7 @@ const AnalysisHistory = () => {
                     </p>
                     {analysis.leakageDetected && (
                       <p className="text-xs text-red-600 font-semibold mt-2">
-                        Leakage: ${analysis.leakageDetected.toLocaleString()}
+                        Leakage: ₹{analysis.leakageDetected.toLocaleString()}
                       </p>
                     )}
                   </div>
@@ -197,7 +197,7 @@ const AnalysisHistory = () => {
                     <div className="bg-red-50 rounded-lg p-4 border border-red-200">
                       <p className="text-xs text-red-600 font-semibold">Leakage Detected</p>
                       <p className="text-sm font-bold text-red-600 mt-1">
-                        ${selectedAnalysis.leakageDetected.toLocaleString()}
+                        ₹{selectedAnalysis.leakageDetected.toLocaleString()}
                       </p>
                     </div>
                   )}

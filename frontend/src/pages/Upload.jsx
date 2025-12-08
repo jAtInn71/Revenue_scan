@@ -328,14 +328,14 @@ const Upload = () => {
                       </div>
                     </div>
 
-                    {uploadResult.leakage_summary.total_amount > 0 && (
-                      <div className="mt-4 pt-4 border-t border-gray-200">
-                        <p className="text-sm text-gray-600">Potential Revenue Impact</p>
-                        <p className="text-2xl font-bold text-red-600">
-                          ${uploadResult.leakage_summary.total_amount.toLocaleString()}
-                        </p>
-                      </div>
-                    )}
+                      {uploadResult.leakage_summary.total_amount > 0 && (
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                          <p className="text-sm text-gray-600">Potential Revenue Impact</p>
+                          <p className="text-2xl font-bold text-red-600">
+                            ₹{uploadResult.leakage_summary.total_amount.toLocaleString()}
+                          </p>
+                        </div>
+                      )}
                   </div>
                 )}
               </div>
@@ -361,19 +361,19 @@ const Upload = () => {
                         <div>
                           <p className="text-xs text-gray-600">Total Revenue</p>
                           <p className="text-lg font-bold text-green-600">
-                            ${uploadResult.financial_summary.total_revenue?.toLocaleString() || 0}
+                            ₹{uploadResult.financial_summary.total_revenue?.toLocaleString() || 0}
                           </p>
                         </div>
                         <div>
                           <p className="text-xs text-gray-600">Total Costs</p>
                           <p className="text-lg font-bold text-red-600">
-                            ${uploadResult.financial_summary.total_costs?.toLocaleString() || 0}
+                            ₹{uploadResult.financial_summary.total_costs?.toLocaleString() || 0}
                           </p>
                         </div>
                         <div>
                           <p className="text-xs text-gray-600">Net Profit</p>
                           <p className="text-lg font-bold text-blue-600">
-                            ${uploadResult.financial_summary.net_profit?.toLocaleString() || 0}
+                            ₹{uploadResult.financial_summary.net_profit?.toLocaleString() || 0}
                           </p>
                         </div>
                         <div>
@@ -415,8 +415,8 @@ const Upload = () => {
                         </div>
                         <div>
                           <p className="text-xs text-gray-600">Revenue at Risk</p>
-                          <p className="text-lg font-bold text-red-600">
-                            ${uploadResult.kpis.revenue_at_risk?.toLocaleString() || 0}
+                          <p className="text-lg font-bold text-orange-600">
+                            ₹{uploadResult.kpis.revenue_at_risk?.toLocaleString() || 0}
                           </p>
                         </div>
                       </div>
@@ -462,7 +462,7 @@ const Upload = () => {
                       )}
                       {issue.amount > 0 && (
                         <p className="text-sm text-red-600 font-semibold mt-1">
-                          Impact: ${issue.amount.toLocaleString()}
+                          Impact: ₹{issue.amount.toLocaleString()}
                         </p>
                       )}
                       {issue.affected_rows && (
@@ -499,7 +499,7 @@ const Upload = () => {
                         <div>
                           <p className="text-gray-600 text-xs">Total Sum</p>
                           <p className="font-semibold text-green-600">
-                            ${details.sum?.toLocaleString() || 0}
+                            ₹{details.sum?.toLocaleString() || 0}
                           </p>
                         </div>
                       )}
@@ -507,7 +507,7 @@ const Upload = () => {
                         <div>
                           <p className="text-gray-600 text-xs">Average</p>
                           <p className="font-semibold text-blue-600">
-                            ${details.mean?.toFixed(2) || 0}
+                            ₹{details.mean?.toFixed(2) || 0}
                           </p>
                         </div>
                       )}
@@ -515,7 +515,7 @@ const Upload = () => {
                         <div>
                           <p className="text-gray-600 text-xs">Min → Max</p>
                           <p className="font-semibold text-gray-700">
-                            ${details.min?.toFixed(2)} → ${details.max?.toFixed(2)}
+                            ₹{details.min?.toFixed(2)} → ₹{details.max?.toFixed(2)}
                           </p>
                         </div>
                       )}

@@ -359,13 +359,13 @@ const ExistingBusinessAnalyze = () => {
               <div className="bg-blue-50 p-4 rounded-lg">
                 <p className="text-sm text-blue-600 mb-1">Monthly Revenue</p>
                 <p className="text-2xl font-bold text-blue-900">
-                  ${analysisResult.financial_summary.monthly_revenue.toLocaleString()}
+                  ₹{analysisResult.financial_summary.monthly_revenue.toLocaleString()}
                 </p>
               </div>
               <div className="bg-red-50 p-4 rounded-lg">
                 <p className="text-sm text-red-600 mb-1">Total Loss</p>
                 <p className="text-2xl font-bold text-red-900">
-                  ${analysisResult.total_identified_loss.toLocaleString()}
+                  ₹{analysisResult.total_identified_loss.toLocaleString()}
                 </p>
               </div>
               <div className="bg-yellow-50 p-4 rounded-lg">
@@ -389,27 +389,27 @@ const ExistingBusinessAnalyze = () => {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   <div className="bg-white p-3 rounded border">
                     <p className="text-xs text-gray-600">Refunds</p>
-                    <p className="text-lg font-bold text-red-600">${analysisResult.leakage_breakdown.refunds.toLocaleString()}</p>
+                    <p className="text-lg font-bold text-red-600">₹{analysisResult.leakage_breakdown.refunds.toLocaleString()}</p>
                   </div>
                   <div className="bg-white p-3 rounded border">
                     <p className="text-xs text-gray-600">Returns</p>
-                    <p className="text-lg font-bold text-orange-600">${analysisResult.leakage_breakdown.returns.toLocaleString()}</p>
+                    <p className="text-lg font-bold text-orange-600">₹{analysisResult.leakage_breakdown.returns.toLocaleString()}</p>
                   </div>
                   <div className="bg-white p-3 rounded border">
                     <p className="text-xs text-gray-600">Discounts</p>
-                    <p className="text-lg font-bold text-yellow-600">${analysisResult.leakage_breakdown.discounts.toLocaleString()}</p>
+                    <p className="text-lg font-bold text-yellow-600">₹{analysisResult.leakage_breakdown.discounts.toLocaleString()}</p>
                   </div>
                   <div className="bg-white p-3 rounded border">
                     <p className="text-xs text-gray-600">Uncollected</p>
-                    <p className="text-lg font-bold text-purple-600">${analysisResult.leakage_breakdown.uncollected.toLocaleString()}</p>
+                    <p className="text-lg font-bold text-purple-600">₹{analysisResult.leakage_breakdown.uncollected.toLocaleString()}</p>
                   </div>
                   <div className="bg-white p-3 rounded border">
                     <p className="text-xs text-gray-600">Inventory Shrinkage</p>
-                    <p className="text-lg font-bold text-pink-600">${analysisResult.leakage_breakdown.inventory_shrinkage.toLocaleString()}</p>
+                    <p className="text-lg font-bold text-pink-600">₹{analysisResult.leakage_breakdown.inventory_shrinkage.toLocaleString()}</p>
                   </div>
                   <div className="bg-white p-3 rounded border">
                     <p className="text-xs text-gray-600">Unrecorded Sales</p>
-                    <p className="text-lg font-bold text-indigo-600">${analysisResult.leakage_breakdown.unrecorded_sales.toLocaleString()}</p>
+                    <p className="text-lg font-bold text-indigo-600">₹{analysisResult.leakage_breakdown.unrecorded_sales.toLocaleString()}</p>
                   </div>
                 </div>
               </div>

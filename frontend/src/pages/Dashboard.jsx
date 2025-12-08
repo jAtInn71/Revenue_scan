@@ -128,7 +128,7 @@ const Dashboard = () => {
             <div>
               <p className="text-sm font-medium text-gray-600 mb-2">Total Revenue</p>
               <p className="text-2xl md:text-3xl font-bold text-black">
-                ${data?.metrics?.totalRevenue?.toLocaleString() || '0'}
+                ₹{data?.metrics?.totalRevenue?.toLocaleString() || '0'}
               </p>
             </div>
             <div className="w-10 h-10 md:w-12 md:h-12 bg-black rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -136,7 +136,7 @@ const Dashboard = () => {
             </div>
           </div>
           <p className="text-xs md:text-sm text-gray-600">
-            Net Profit: ${data?.metrics?.netProfit?.toLocaleString() || '0'} ({data?.metrics?.profitMargin?.toFixed(1) || '0'}%)
+            Net Profit: ₹{data?.metrics?.netProfit?.toLocaleString() || '0'} ({data?.metrics?.profitMargin?.toFixed(1) || '0'}%)
           </p>
         </div>
 
@@ -146,7 +146,7 @@ const Dashboard = () => {
             <div>
               <p className="text-sm font-medium text-gray-600 mb-2">Revenue Leakage</p>
               <p className="text-2xl md:text-3xl font-bold text-red-600">
-                ${data?.metrics?.leakageDetected?.toLocaleString() || '0'}
+                ₹{data?.metrics?.leakageDetected?.toLocaleString() || '0'}
               </p>
             </div>
             <div className="w-10 h-10 md:w-12 md:h-12 bg-red-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -234,7 +234,7 @@ const Dashboard = () => {
               <XAxis dataKey="month" stroke="#808080" />
               <YAxis stroke="#808080" />
               <Tooltip 
-                formatter={(value) => `$${value.toLocaleString()}`}
+                formatter={(value) => `₹${value.toLocaleString()}`}
                 contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '8px' }}
               />
               <Legend />
@@ -268,7 +268,7 @@ const Dashboard = () => {
               <XAxis dataKey="category" stroke="#808080" />
               <YAxis stroke="#808080" />
               <Tooltip 
-                formatter={(value) => `$${value.toLocaleString()}`}
+                formatter={(value) => `₹${value.toLocaleString()}`}
                 contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '8px' }}
               />
               <Bar dataKey="amount" fill="#000000" radius={[8, 8, 0, 0]} />
@@ -297,7 +297,7 @@ const Dashboard = () => {
               ))}
             </Pie>
             <Tooltip 
-              formatter={(value) => `$${value.toLocaleString()}`}
+              formatter={(value) => `₹${value.toLocaleString()}`}
               contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '8px' }}
             />
           </PieChart>
