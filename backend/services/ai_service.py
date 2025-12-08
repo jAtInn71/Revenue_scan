@@ -950,119 +950,272 @@ Provide:
             total_columns = len(df.columns)
             
             # Identify all column types
-            numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
+            numeric_cols = df.select_dtypes(include=['int64', 'float64', 'int32', 'float32']).columns.tolist()
             
-            # Calculate key financial metrics
-            revenue_cols = [col for col in numeric_cols if any(term in col.lower() for term in 
-                           ['revenue', 'sales', 'amount', 'total', 'price', 'income', 'profit'])]
-            
-            cost_cols = [col for col in numeric_cols if any(term in col.lower() for term in 
-                        ['cost', 'expense', 'cogs', 'spend', 'payment'])]
+            # Calculate key financial metrics using detected columns
+            detected_cols = leakage_data.get('columns_analyzed', {})
+            revenue_cols = detected_cols.get('revenue_columns', [])
+            cost_cols = detected_cols.get('cost_columns', [])
+            discount_cols = detected_cols.get('discount_columns', [])
+            quantity_cols = detected_cols.get('quantity_columns', [])
+            product_cols = detected_cols.get('product_columns', [])
+            customer_cols = detected_cols.get('customer_columns', [])
             
             # Financial summary
-            total_revenue = sum(df[col].sum() for col in revenue_cols if col in df.columns)
-            total_costs = sum(df[col].sum() for col in cost_cols if col in df.columns)
+            total_revenue = 0
+            total_costs = 0
+            total_discounts = 0
+            
+            for col in revenue_cols:
+                if col in df.columns and pd.api.types.is_numeric_dtype(df[col]):
+                    total_revenue += df[col].sum()
+            
+            for col in cost_cols:
+                if col in df.columns and pd.api.types.is_numeric_dtype(df[col]):
+                    total_costs += abs(df[col].sum())
+            
+            for col in discount_cols:
+                if col in df.columns and pd.api.types.is_numeric_dtype(df[col]):
+                    total_discounts += abs(df[col].sum())
+            
             total_profit = total_revenue - total_costs
+            profit_margin = (total_profit / total_revenue * 100) if total_revenue > 0 else 0
             
-            # Column statistics
-            column_stats = {}
-            for col in numeric_cols[:20]:  # Limit to first 20 numeric columns
-                column_stats[col] = {
-                    "mean": float(df[col].mean()) if not df[col].isna().all() else 0,
-                    "sum": float(df[col].sum()) if not df[col].isna().all() else 0,
-                    "min": float(df[col].min()) if not df[col].isna().all() else 0,
-                    "max": float(df[col].max()) if not df[col].isna().all() else 0,
-                    "null_count": int(df[col].isnull().sum())
-                }
+            # Additional insights
+            avg_transaction = total_revenue / total_rows if total_rows > 0 else 0
             
-            # Prepare prompt
-            prompt = f"""Analyze this financial dataset:
+            # Product diversity
+            product_count = df[product_cols[0]].nunique() if product_cols and len(product_cols) > 0 else 0
+            
+            # Customer metrics
+            customer_count = df[customer_cols[0]].nunique() if customer_cols and len(customer_cols) > 0 else 0
+            customer_lifetime_value = total_revenue / customer_count if customer_count > 0 else 0
+            
+            # Top leakages summary
+            top_leakages_summary = []
+            for item in leakage_data.get('items', [])[:5]:
+                top_leakages_summary.append(f"- {item['type']}: ${item['amount']:,.0f} ({item['severity']} severity) - {item['description'][:100]}")
+            
+            # Prepare comprehensive prompt
+            prompt = f"""Analyze this comprehensive financial dataset and provide strategic insights:
 
-DATA OVERVIEW:
-- Rows: {total_rows:,}, Columns: {total_columns}
-- Revenue: ${total_revenue:,.2f}
-- Costs: ${total_costs:,.2f}  
-- Profit: ${total_profit:,.2f}
+📊 DATASET OVERVIEW:
+• File: {file_name}
+• Total Records: {total_rows:,} transactions
+• Data Columns: {total_columns} ({len(revenue_cols)} revenue, {len(cost_cols)} cost, {len(discount_cols)} discount)
+• Products/Services: {product_count} unique items
+• Customer Base: {customer_count} unique customers
 
-COLUMNS: {', '.join(df.columns.tolist()[:30])}
+💰 FINANCIAL PERFORMANCE:
+• Total Revenue: ${total_revenue:,.2f}
+• Total Costs: ${total_costs:,.2f}
+• Net Profit: ${total_profit:,.2f}
+• Profit Margin: {profit_margin:.2f}%
+• Avg Transaction Value: ${avg_transaction:.2f}
+• Customer Lifetime Value: ${customer_lifetime_value:.2f}
+• Total Discounts Given: ${total_discounts:,.2f}
 
-LEAKAGES: {leakage_data.get('total_leakages', 0)} issues, ${leakage_data.get('total_amount', 0):,.2f} at risk
+🚨 DETECTED ISSUES:
+• Total Leakages Identified: {leakage_data.get('total_leakages', 0)}
+• Financial Impact: ${leakage_data.get('total_amount', 0):,.2f}
 
-Provide:
-1. Executive summary (3 sentences)
-2. Revenue analysis (4 key insights)
-3. Profit & loss insights (3 points)
-4. Leakage assessment (4 findings)
-5. Top 5 actionable recommendations with $ impact
-6. KPIs: revenue/transaction, profit margin, data quality score
-7. 30-day action plan
+Top 5 Critical Issues:
+{chr(10).join(top_leakages_summary) if top_leakages_summary else 'No critical issues detected'}
 
-Use specific numbers. Be concise and actionable."""
+📋 COLUMN STRUCTURE:
+Revenue Columns: {', '.join(revenue_cols[:5]) if revenue_cols else 'None detected'}
+Cost Columns: {', '.join(cost_cols[:3]) if cost_cols else 'None detected'}
+Product Columns: {', '.join(product_cols[:2]) if product_cols else 'None detected'}
+Customer Columns: {', '.join(customer_cols[:2]) if customer_cols else 'None detected'}
+
+🎯 ANALYSIS REQUEST:
+Provide a comprehensive business analysis with:
+
+1. EXECUTIVE SUMMARY (3-4 sentences)
+   - Overall business health assessment
+   - Key financial performance indicators
+   - Critical risks identified
+
+2. REVENUE ANALYSIS (4-5 specific insights)
+   - Revenue patterns and trends
+   - Revenue concentration risks
+   - Pricing effectiveness
+   - Growth opportunities
+
+3. COST & PROFITABILITY (3-4 insights)
+   - Cost structure evaluation
+   - Margin analysis
+   - Cost optimization opportunities
+
+4. DATA QUALITY ASSESSMENT (2-3 points)
+   - Data completeness and accuracy
+   - Critical data gaps
+   - Recommendations for improvement
+
+5. TOP 5 ACTIONABLE RECOMMENDATIONS
+   - Prioritized by financial impact
+   - Include specific dollar amounts when possible
+   - Provide implementation timeline (immediate/30/60/90 days)
+   - Expected ROI for each recommendation
+
+6. KEY PERFORMANCE INDICATORS (Calculate these)
+   - Revenue per Transaction
+   - Customer Acquisition Efficiency
+   - Discount Rate (% of revenue)
+   - Data Quality Score (0-100)
+   - Risk Score (0-100)
+
+7. 30-DAY ACTION PLAN
+   - Week 1: Immediate actions
+   - Week 2: Quick wins
+   - Week 3-4: Strategic initiatives
+
+Be specific with numbers, realistic with recommendations, and actionable in your guidance. Focus on measurable outcomes and clear ROI."""
             
             response = await self.client.chat.completions.create(
                 model=settings.OPENAI_MODEL,
                 messages=[
-                    {"role": "system", "content": "You are a financial analyst. Provide data-driven, actionable insights with specific numbers."},
+                    {"role": "system", "content": "You are an expert financial analyst and business consultant with 20+ years of experience. Provide data-driven, actionable insights with specific numbers and realistic recommendations. Structure your response clearly with headers and bullet points."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.7,
-                max_tokens=2000
+                max_tokens=3000
             )
             
             ai_insights = response.choices[0].message.content
             
             return {
                 "status": "completed",
-                "message": f"Analyzed {total_rows:,} rows across {total_columns} columns",
+                "message": f"✅ Analyzed {total_rows:,} rows across {total_columns} columns. Found {leakage_data.get('total_leakages', 0)} issues with ${leakage_data.get('total_amount', 0):,.2f} potential impact.",
                 "financial_summary": {
-                    "total_revenue": total_revenue,
-                    "total_costs": total_costs,
-                    "net_profit": total_profit,
-                    "profit_margin": (total_profit/total_revenue*100) if total_revenue > 0 else 0
+                    "total_revenue": float(total_revenue),
+                    "total_costs": float(total_costs),
+                    "net_profit": float(total_profit),
+                    "profit_margin": float(profit_margin),
+                    "total_discounts": float(total_discounts),
+                    "avg_transaction_value": float(avg_transaction)
+                },
+                "business_metrics": {
+                    "total_transactions": int(total_rows),
+                    "unique_products": int(product_count),
+                    "unique_customers": int(customer_count),
+                    "customer_lifetime_value": float(customer_lifetime_value),
+                    "revenue_per_customer": float(total_revenue / customer_count) if customer_count > 0 else 0
                 },
                 "ai_insights": ai_insights,
                 "recommendations": self._extract_actions(ai_insights),
                 "kpis": {
-                    "revenue_per_transaction": total_revenue / total_rows if total_rows > 0 else 0,
-                    "total_transactions": total_rows,
-                    "revenue_at_risk": leakage_data.get('total_amount', 0)
+                    "revenue_per_transaction": float(avg_transaction),
+                    "total_transactions": int(total_rows),
+                    "revenue_at_risk": float(leakage_data.get('total_amount', 0)),
+                    "discount_rate": float((total_discounts / total_revenue * 100) if total_revenue > 0 else 0),
+                    "profit_margin": float(profit_margin),
+                    "data_quality_score": self._calculate_data_quality_score(df, leakage_data)
                 }
             }
             
         except Exception as e:
             print(f"AI analysis failed: {e}")
+            import traceback
+            traceback.print_exc()
             return self._generate_fallback_dataset_analysis(df, leakage_data)
     
+    def _calculate_data_quality_score(self, df, leakage_data: dict) -> float:
+        """Calculate data quality score (0-100)"""
+        score = 100.0
+        
+        # Deduct for missing data
+        total_nulls = df.isnull().sum().sum()
+        total_cells = len(df) * len(df.columns)
+        null_percentage = (total_nulls / total_cells * 100) if total_cells > 0 else 0
+        score -= (null_percentage * 2)  # -2 points per % of missing data
+        
+        # Deduct for duplicates
+        duplicate_percentage = (df.duplicated().sum() / len(df) * 100) if len(df) > 0 else 0
+        score -= (duplicate_percentage * 3)  # -3 points per % duplicates
+        
+        # Deduct for data quality issues
+        data_quality_issues = [item for item in leakage_data.get('items', []) if item['category'] == 'Data Quality']
+        score -= (len(data_quality_issues) * 5)  # -5 points per issue
+        
+        return max(0.0, min(100.0, score))
+    
     def _generate_fallback_dataset_analysis(self, df, leakage_data: dict) -> dict:
-        """Generate basic analysis when AI is unavailable"""
+        """Generate enhanced analysis when AI is unavailable"""
+        import pandas as pd
+        
         total_rows = len(df)
-        numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
+        numeric_cols = df.select_dtypes(include=['int64', 'float64', 'int32', 'float32']).columns.tolist()
         
-        revenue_cols = [col for col in numeric_cols if any(term in col.lower() for term in 
-                       ['revenue', 'sales', 'amount', 'total', 'price'])]
+        # Use detected columns from leakage analyzer
+        detected_cols = leakage_data.get('columns_analyzed', {})
+        revenue_cols = detected_cols.get('revenue_columns', [])
+        cost_cols = detected_cols.get('cost_columns', [])
         
-        total_revenue = sum(df[col].sum() for col in revenue_cols if col in df.columns)
+        total_revenue = 0
+        total_costs = 0
+        
+        for col in revenue_cols:
+            if col in df.columns and pd.api.types.is_numeric_dtype(df[col]):
+                total_revenue += df[col].sum()
+        
+        for col in cost_cols:
+            if col in df.columns and pd.api.types.is_numeric_dtype(df[col]):
+                total_costs += abs(df[col].sum())
+        
+        total_profit = total_revenue - total_costs
+        profit_margin = (total_profit / total_revenue * 100) if total_revenue > 0 else 0
+        
+        # Build comprehensive insights
+        insights = f"""📊 ANALYSIS SUMMARY
+
+Dataset contains {total_rows:,} transactions with {len(df.columns)} data columns.
+
+💰 FINANCIAL OVERVIEW:
+• Total Revenue: ${total_revenue:,.2f}
+• Total Costs: ${total_costs:,.2f}
+• Net Profit: ${total_profit:,.2f}
+• Profit Margin: {profit_margin:.1f}%
+
+🚨 ISSUES DETECTED:
+• {leakage_data.get('total_leakages', 0)} revenue leakage points identified
+• ${leakage_data.get('total_amount', 0):,.2f} at risk
+• Data quality score: {self._calculate_data_quality_score(df, leakage_data):.0f}/100
+
+🎯 KEY RECOMMENDATIONS:
+1. Address the {leakage_data.get('total_leakages', 0)} flagged issues immediately - potential recovery: ${leakage_data.get('total_amount', 0) * 0.7:,.2f}
+2. Implement automated data validation to prevent future errors
+3. Review pricing strategy to improve {profit_margin:.1f}% margin
+4. Set up regular monitoring and alerts for anomaly detection
+5. Standardize data collection processes across all channels
+
+📈 NEXT STEPS:
+Week 1: Review and fix critical data issues
+Week 2: Implement validation rules and monitoring
+Week 3-4: Optimize pricing and cost structure"""
         
         return {
             "status": "completed",
-            "message": f"Analyzed {total_rows:,} rows",
+            "message": f"✅ Analyzed {total_rows:,} rows. Found {leakage_data.get('total_leakages', 0)} issues.",
             "financial_summary": {
-                "total_revenue": total_revenue,
-                "total_costs": 0,
-                "net_profit": 0,
-                "profit_margin": 0
+                "total_revenue": float(total_revenue),
+                "total_costs": float(total_costs),
+                "net_profit": float(total_profit),
+                "profit_margin": float(profit_margin)
             },
-            "ai_insights": f"Dataset contains {total_rows:,} transactions with ${total_revenue:,.2f} in revenue. {leakage_data.get('total_leakages', 0)} issues detected requiring review.",
+            "ai_insights": insights,
             "recommendations": [
-                "Review flagged transactions",
-                "Implement data validation",
-                "Set up monitoring alerts",
-                "Conduct regular audits",
-                "Train team on accuracy"
+                f"Fix {leakage_data.get('total_leakages', 0)} detected issues - Recovery potential: ${leakage_data.get('total_amount', 0) * 0.7:,.2f}",
+                "Implement data validation rules to improve data quality",
+                "Set up automated monitoring and alerts",
+                "Review and optimize pricing strategy",
+                "Conduct regular financial audits"
             ],
             "kpis": {
-                "revenue_per_transaction": total_revenue / total_rows if total_rows > 0 else 0,
-                "total_transactions": total_rows,
-                "revenue_at_risk": leakage_data.get('total_amount', 0)
+                "revenue_per_transaction": float(total_revenue / total_rows) if total_rows > 0 else 0,
+                "total_transactions": int(total_rows),
+                "revenue_at_risk": float(leakage_data.get('total_amount', 0)),
+                "profit_margin": float(profit_margin),
+                "data_quality_score": self._calculate_data_quality_score(df, leakage_data)
             }
         }

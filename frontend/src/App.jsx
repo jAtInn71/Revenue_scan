@@ -8,6 +8,8 @@ import AIChat from './pages/AIChat';
 import Alerts from './pages/Alerts';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
+import NewBusinessAnalyze from './pages/NewBusinessAnalyze';
+import ExistingBusinessAnalyze from './pages/ExistingBusinessAnalyze';
 import Layout from './components/Layout';
 
 function App() {
@@ -52,6 +54,8 @@ function App() {
           <Route path="alerts" element={<Alerts />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="analyze/new-business" element={<NewBusinessAnalyze />} />
+          <Route path="analyze/existing-business" element={<ExistingBusinessAnalyze />} />
         </Route>
       </Routes>
     </Router>

@@ -15,10 +15,12 @@ from database.database import get_db, User, UploadedData
 from services.auth_service import get_current_user
 from services.ai_service import AIService
 from services.alert_service import evaluate_alerts_on_upload
+from services.enhanced_leakage_analyzer import EnhancedLeakageAnalyzer
 from core.config import settings
 
 router = APIRouter()
 ai_service = AIService()
+leakage_analyzer = EnhancedLeakageAnalyzer()
 
 @router.post("/")
 async def upload_file(
@@ -66,34 +68,93 @@ async def upload_file(
         selected_sheet = None
         
         if file_extension == ".csv":
-            df = pd.read_csv(file_path)
-        else:  # Excel - handle multiple sheets
-            # Get all sheet names
-            excel_file = pd.ExcelFile(file_path)
-            sheet_names = excel_file.sheet_names
+            # Try different encodings and delimiters for CSV
+            encodings = ['utf-8', 'latin1', 'iso-8859-1', 'cp1252']
+            delimiters = [',', ';', '\t', '|']
             
-            # Determine which sheet to read
-            if sheet_name and sheet_name in sheet_names:
-                selected_sheet = sheet_name
-            else:
-                selected_sheet = sheet_names[0]  # Default to first sheet
+            df = None
+            for encoding in encodings:
+                for delimiter in delimiters:
+                    try:
+                        df = pd.read_csv(file_path, encoding=encoding, delimiter=delimiter, low_memory=False)
+                        if len(df.columns) > 1:  # Valid CSV should have multiple columns
+                            break
+                    except:
+                        continue
+                if df is not None and len(df.columns) > 1:
+                    break
             
-            # Read the selected sheet
-            df = pd.read_excel(file_path, sheet_name=selected_sheet)
+            if df is None or len(df.columns) <= 1:
+                raise ValueError("Could not parse CSV file. Please check the file format.")
+                
+        else:  # Excel - handle multiple sheets with robust parsing
+            try:
+                # Get all sheet names
+                excel_file = pd.ExcelFile(file_path)
+                sheet_names = excel_file.sheet_names
+                
+                # Determine which sheet to read
+                if sheet_name and sheet_name in sheet_names:
+                    selected_sheet = sheet_name
+                else:
+                    selected_sheet = sheet_names[0]  # Default to first sheet
+                
+                # Read the selected sheet with better options
+                df = pd.read_excel(
+                    file_path, 
+                    sheet_name=selected_sheet,
+                    na_values=['', ' ', 'NA', 'N/A', 'null', 'NULL', 'None', '#N/A', '#VALUE!', '#REF!'],
+                    keep_default_na=True
+                )
+                
+                # Handle Excel files where first row might not be headers
+                if df.columns.str.contains('Unnamed').any():
+                    # Try to detect if first row is actually data
+                    first_row_numeric = df.iloc[0].apply(lambda x: pd.api.types.is_numeric_dtype(type(x))).sum()
+                    if first_row_numeric > len(df.columns) * 0.5:
+                        # First row seems to be data, not headers - use default column names
+                        df = pd.read_excel(file_path, sheet_name=selected_sheet, header=None)
+                        df.columns = [f'Column_{i+1}' for i in range(len(df.columns))]
+                        
+            except Exception as e:
+                raise ValueError(f"Error reading Excel file: {str(e)}")
+        
+        # Clean the dataframe
+        # Remove completely empty rows and columns
+        df = df.dropna(how='all', axis=0)  # Remove rows where all values are NaN
+        df = df.dropna(how='all', axis=1)  # Remove columns where all values are NaN
+        
+        # Strip whitespace from column names
+        df.columns = df.columns.str.strip()
         
         # Get data statistics
         total_rows = len(df)
         total_columns = len(df.columns)
         
+        if total_rows == 0:
+            raise ValueError("The file appears to be empty or contains no valid data.")
+        
         # Generate COMPREHENSIVE data summary for ALL columns
         column_details = {}
         for col in df.columns:
+            # Try to convert string numbers to numeric
+            if df[col].dtype == 'object':
+                # Remove currency symbols and commas, then try to convert
+                temp_col = df[col].astype(str).str.replace('$', '').str.replace(',', '').str.strip()
+                try:
+                    numeric_col = pd.to_numeric(temp_col, errors='coerce')
+                    if numeric_col.notna().sum() / len(df) > 0.8:  # If >80% can be converted
+                        df[col] = numeric_col
+                except:
+                    pass
+            
             col_data = {
                 "name": col,
                 "data_type": str(df[col].dtype),
                 "null_count": int(df[col].isnull().sum()),
                 "null_percentage": float((df[col].isnull().sum() / total_rows * 100)) if total_rows > 0 else 0,
                 "unique_values": int(df[col].nunique()),
+                "sample_values": df[col].dropna().head(3).tolist() if len(df[col].dropna()) > 0 else []
             }
             
             # Add numeric statistics if column is numeric
@@ -132,8 +193,8 @@ async def upload_file(
         # Parse column mapping if provided
         mapping = json.loads(column_mapping) if column_mapping else {}
         
-        # Detect potential leakages
-        leakage_data = _analyze_data_for_leakages(df, mapping)
+        # Detect potential leakages using enhanced analyzer
+        leakage_data = leakage_analyzer.analyze_complete(df)
         
         # Get comprehensive AI analysis of full dataset
         ai_analysis_result = await ai_service.analyze_full_dataset(df, file.filename, leakage_data)

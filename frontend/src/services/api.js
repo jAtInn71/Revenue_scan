@@ -97,6 +97,32 @@ export const explainLeakage = async (uploadId) => {
   return response.data;
 };
 
+// Chatbot APIs
+export const sendChatMessage = async (data) => {
+  const response = await api.post('/chatbot', data);
+  return response.data;
+};
+
+export const getChatHistory = async () => {
+  const response = await api.get('/chatbot/history');
+  return response.data;
+};
+
+export const clearChatHistory = async () => {
+  const response = await api.delete('/chatbot/history');
+  return response.data;
+};
+
+export const getChatSuggestions = async () => {
+  const response = await api.get('/chatbot/suggestions');
+  return response.data;
+};
+
+export const getChatTopics = async () => {
+  const response = await api.get('/chatbot/topics');
+  return response.data;
+};
+
 // Alerts APIs
 export const getAlerts = async () => {
   const response = await api.get('/alerts/');
@@ -160,6 +186,27 @@ export const updateProfile = async (data) => {
 
 export const changePassword = async (data) => {
   const response = await api.put('/settings/password', data);
+  return response.data;
+};
+
+// Business Analysis APIs
+export const analyzeNewBusiness = async (formData) => {
+  const response = await api.post('/business/new/analyze', formData);
+  return response.data;
+};
+
+export const analyzeExistingBusiness = async (formData) => {
+  const response = await api.post('/business/existing/analyze', formData);
+  return response.data;
+};
+
+export const getBusinessAnalysis = async (analysisId) => {
+  const response = await api.get(`/business/analysis/${analysisId}`);
+  return response.data;
+};
+
+export const getAnalysisHistory = async (limit = 10) => {
+  const response = await api.get(`/business/history?limit=${limit}`);
   return response.data;
 };
 

@@ -21,7 +21,8 @@ from api.routes import (
     notification_routes,
     reports_routes,
     settings_routes,
-    leakage_routes
+    leakage_routes,
+    chatbot_routes
 )
 from core.config import settings
 from database.database import init_db
@@ -83,6 +84,7 @@ app.include_router(leakage_routes.router, prefix="/api/analysis", tags=["Analysi
 # Data Management
 app.include_router(upload_routes.router, prefix="/api/upload", tags=["Upload"])
 app.include_router(ai_insights_routes.router, prefix="/api/ai-insights", tags=["AI Insights"])
+app.include_router(chatbot_routes.router, prefix="/api/chatbot", tags=["AI Chatbot"])
 
 # Alerts & Notifications
 app.include_router(alert_routes.router, prefix="/api/alerts", tags=["Alerts"])

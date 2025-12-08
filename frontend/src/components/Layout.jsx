@@ -47,6 +47,8 @@ const Layout = ({ setIsAuthenticated }) => {
   const navigation = [
     { name: 'Dashboard', path: '/dashboard', icon: '📊' },
     { name: 'Upload Data', path: '/upload', icon: '📤' },
+    { name: 'New Business', path: '/analyze/new-business', icon: '🚀' },
+    { name: 'Existing Business', path: '/analyze/existing-business', icon: '📊' },
     { name: 'AI Insights', path: '/ai-chat', icon: '🤖' },
     { name: 'Alerts', path: '/alerts', icon: '🔔' },
     { name: 'Reports', path: '/reports', icon: '📈' },

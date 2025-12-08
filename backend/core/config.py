@@ -25,8 +25,8 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./revenue_advisor.db"
     
     # OpenAI API (for AI-powered analysis)
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-    OPENAI_MODEL: str = "gpt-4"
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "your-openai-api-key-here")
+    OPENAI_MODEL: str = "gpt-4o-mini"
     
     # JWT Authentication
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production-min-32-chars")
