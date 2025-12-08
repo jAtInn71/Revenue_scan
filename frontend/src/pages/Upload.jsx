@@ -65,7 +65,26 @@ const Upload = () => {
     setError('');
 
     try {
+      console.log('Starting upload for file:', file.name);
       const result = await uploadFile(file, selectedSheet);
+      console.log('Upload result:', result);
+      
+      // Save to analysis history
+      const historyEntry = {
+        id: result.upload_id || `upload-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        filename: file.name,
+        uploadId: result.upload_id || 'unknown',
+        rowsCount: result.rows_count || 0,
+        leakageDetected: result.leakage_summary?.total_amount || 0,
+        riskLevel: result.leakage_summary?.risk_level || 'Low',
+        selectedSheet: result.selected_sheet,
+        summary: result.ai_analysis?.message || 'Analysis completed'
+      };
+
+      const existingHistory = JSON.parse(localStorage.getItem('analysisHistory') || '[]');
+      existingHistory.push(historyEntry);
+      localStorage.setItem('analysisHistory', JSON.stringify(existingHistory));
       
       // If Excel file with multiple sheets, store them for potential re-upload
       if (result.sheet_names && result.sheet_names.length > 1) {
@@ -82,7 +101,12 @@ const Upload = () => {
       // Always update result (don't reset it)
       setUploadResult(result);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Upload failed. Please try again.');
+      console.error('Upload error:', err);
+      const errorMessage = err.response?.data?.detail || 
+                          err.message || 
+                          'Upload failed. Please try again.';
+      setError(errorMessage);
+      console.error('Full error object:', err);
     } finally {
       setUploading(false);
     }
@@ -91,33 +115,33 @@ const Upload = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Upload Data</h1>
-        <p className="text-gray-600 mt-1">Upload your revenue data for AI-powered analysis</p>
+      <div className="mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-black">Upload Data</h1>
+        <p className="text-slate-600 mt-2">Upload your revenue data for AI-powered analysis</p>
       </div>
 
       {/* Upload Area */}
-      <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+      <div className="bg-white rounded-xl shadow-md border border-slate-200 p-6 md:p-8">
         <div
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`border-2 border-dashed rounded-xl p-12 text-center transition-all ${
+          className={`border-2 border-dashed rounded-xl p-8 md:p-12 text-center transition-all ${
             isDragging
-              ? 'border-indigo-500 bg-indigo-50'
-              : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
+              ? 'border-brand-accent bg-brand-accent/5'
+              : 'border-slate-300 hover:border-brand-accent hover:bg-slate-50'
           }`}
         >
           <div className="flex flex-col items-center gap-4">
-            <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center">
-              <span className="text-4xl">📤</span>
+            <div className="w-16 h-16 md:w-20 md:h-20 bg-black rounded-full flex items-center justify-center text-brand-accent">
+              <span className="text-3xl md:text-4xl">📤</span>
             </div>
             
             <div>
-              <h3 className="text-xl font-bold text-gray-900">
+              <h3 className="text-lg md:text-xl font-bold text-black">
                 {file ? file.name : 'Drop your file here'}
               </h3>
-              <p className="text-gray-600 mt-2">
+              <p className="text-slate-600 mt-2 text-sm md:text-base">
                 {file ? (
                   <span className="text-green-600 font-medium">
                     ✓ File selected ({(file.size / 1024).toFixed(2)} KB)
@@ -136,22 +160,22 @@ const Upload = () => {
                   onChange={handleFileSelect}
                   className="hidden"
                 />
-                <span className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-indigo-200 transition-all inline-block">
+                <span className="px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-slate-900 shadow-md transition-all inline-block">
                   Choose File
                 </span>
               </label>
             )}
 
             {file && (
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                 <button
                   onClick={handleUpload}
                   disabled={uploading}
-                  className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+                  className="flex-1 sm:flex-none px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-slate-900 shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {uploading ? (
-                    <span className="flex items-center gap-2">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span className="flex items-center justify-center gap-2 text-white">
+                      <div className="w-5 h-5 border-2 border-brand-accent border-t-transparent rounded-full animate-spin"></div>
                       Uploading...
                     </span>
                   ) : (
@@ -166,7 +190,7 @@ const Upload = () => {
                     setUploadResult(null);
                     setError('');
                   }}
-                  className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-all"
+                  className="flex-1 sm:flex-none px-6 py-3 border-2 border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-all"
                 >
                   {availableSheets ? 'Clear & Start Over' : 'Cancel'}
                 </button>
@@ -175,17 +199,17 @@ const Upload = () => {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-3 gap-4 text-sm text-gray-600">
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-slate-600">
           <div className="flex items-center gap-2">
-            <span className="text-green-500">✓</span>
+            <span className="text-green-500 font-bold">✓</span>
             <span>CSV files supported</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-green-500">✓</span>
+            <span className="text-green-500 font-bold">✓</span>
             <span>Excel (.xlsx, .xls)</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-green-500">✓</span>
+            <span className="text-green-500 font-bold">✓</span>
             <span>Max size: 10MB</span>
           </div>
         </div>
@@ -193,10 +217,10 @@ const Upload = () => {
 
       {/* Sheet Selection for Excel files */}
       {availableSheets && availableSheets.length > 1 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+        <div className="bg-brand-accent/5 border border-brand-accent rounded-xl p-6">
           <div className="flex items-start gap-4">
-            <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-              <span className="text-white text-xl">📊</span>
+            <div className="w-10 h-10 bg-brand-accent rounded-lg flex items-center justify-center flex-shrink-0 font-bold text-black">
+              <span>📊</span>
             </div>
             <div className="flex-1">
               <h3 className="font-bold text-blue-900 mb-2">Excel Workbook - Multiple Sheets Available</h3>
@@ -241,22 +265,31 @@ const Upload = () => {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-          <p className="text-red-600 font-medium">{error}</p>
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 md:p-6">
+          <div className="flex items-start gap-3">
+            <div className="text-2xl flex-shrink-0">⚠️</div>
+            <div className="flex-1">
+              <h3 className="font-bold text-red-900 mb-1">Upload Failed</h3>
+              <p className="text-red-700 text-sm">{error}</p>
+              <p className="text-red-600 text-xs mt-2">
+                💡 Tips: Check that the file format is correct (CSV, XLSX, or XLS), file size is under 10MB, and try again.
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
       {/* Upload Result */}
       {uploadResult && (
-        <div className="space-y-4">
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6">
+        <div className="space-y-4 animate-slide-up">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center flex-shrink-0">
                 <span className="text-white text-2xl">✓</span>
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-bold text-green-900">Upload Successful!</h3>
-                <p className="text-green-700 mt-2">
+                <h3 className="text-xl font-bold text-black">Upload Successful!</h3>
+                <p className="text-gray-700 mt-2">
                   File ID: <span className="font-mono font-semibold">{uploadResult.upload_id}</span>
                 </p>
                 <p className="text-green-700 mt-1">

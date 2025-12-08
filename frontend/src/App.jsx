@@ -8,6 +8,7 @@ import AIChat from './pages/AIChat';
 import Alerts from './pages/Alerts';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
+import AnalysisHistory from './pages/AnalysisHistory';
 import NewBusinessAnalyze from './pages/NewBusinessAnalyze';
 import ExistingBusinessAnalyze from './pages/ExistingBusinessAnalyze';
 import Layout from './components/Layout';
@@ -25,11 +26,12 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-600 font-medium">Loading...</p>
+      <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'white'}}>
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem'}}>
+          <div style={{width: '64px', height: '64px', border: '4px solid black', borderTop: '4px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite'}}></div>
+          <p style={{color: '#4b5563', fontWeight: '500'}}>Loading...</p>
         </div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -45,7 +47,7 @@ function App() {
         } />
         
         <Route path="/" element={
-          isAuthenticated ? <Layout setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />
+          isAuthenticated ? <Layout setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" replace />
         }>
           <Route index element={<Navigate to="/dashboard" />} />
           <Route path="dashboard" element={<Dashboard />} />
@@ -53,6 +55,7 @@ function App() {
           <Route path="ai-chat" element={<AIChat />} />
           <Route path="alerts" element={<Alerts />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="history" element={<AnalysisHistory />} />
           <Route path="settings" element={<Settings />} />
           <Route path="analyze/new-business" element={<NewBusinessAnalyze />} />
           <Route path="analyze/existing-business" element={<ExistingBusinessAnalyze />} />

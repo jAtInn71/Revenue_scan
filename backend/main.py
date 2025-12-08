@@ -47,7 +47,7 @@ app.add_middleware(
 
 # Initialize database
 @app.on_event("startup")
-async def startup_event():
+def startup_event():
     """Initialize database on startup"""
     init_db()
     print("✅ Database initialized successfully")
