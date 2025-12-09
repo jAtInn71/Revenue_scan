@@ -5,12 +5,12 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Upload from './pages/Upload';
 import AIChat from './pages/AIChat';
-import Alerts from './pages/Alerts';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import AnalysisHistory from './pages/AnalysisHistory';
 import NewBusinessAnalyze from './pages/NewBusinessAnalyze';
 import ExistingBusinessAnalyze from './pages/ExistingBusinessAnalyze';
+import AdminPanel from './pages/AdminPanel';
 import Layout from './components/Layout';
 
 function App() {
@@ -53,10 +53,10 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="upload" element={<Upload />} />
           <Route path="ai-chat" element={<AIChat />} />
-          <Route path="alerts" element={<Alerts />} />
           <Route path="reports" element={<Reports />} />
           <Route path="history" element={<AnalysisHistory />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="admin" element={<AdminPanel />} />
           <Route path="analyze/new-business" element={<NewBusinessAnalyze />} />
           <Route path="analyze/existing-business" element={<ExistingBusinessAnalyze />} />
         </Route>

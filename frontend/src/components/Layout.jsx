@@ -88,9 +88,11 @@ const Layout = ({ setIsAuthenticated }) => {
     { name: 'New Business', path: '/analyze/new-business', icon: MdRocket },
     { name: 'Existing Business', path: '/analyze/existing-business', icon: MdAnalytics },
     { name: 'AI Insights', path: '/ai-chat', icon: MdSmartToy },
-    { name: 'Alerts', path: '/alerts', icon: MdNotifications },
     { name: 'Reports', path: '/reports', icon: MdBarChart },
-    ...(user?.role === 'admin' ? [{ name: 'History', path: '/history', icon: MdHistory }] : []),
+    ...(user?.role === 'admin' ? [
+      { name: 'Admin Panel', path: '/admin', icon: MdSettings },
+      { name: 'History', path: '/history', icon: MdHistory }
+    ] : []),
     { name: 'Settings', path: '/settings', icon: MdSettings },
   ];
 

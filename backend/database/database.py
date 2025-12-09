@@ -37,7 +37,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     full_name = Column(String)
     company_name = Column(String)
-    role = Column(String)  # Finance Manager, Business Analyst, etc.
+    role = Column(String, default="user")  # admin or user
     is_active = Column(Boolean, default=True)
     
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -49,6 +49,7 @@ class BusinessAnalysis(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     analysis_id = Column(String, unique=True, index=True)
+    user_id = Column(Integer, index=True)  # Track which user created this analysis
     business_name = Column(String, index=True)
     business_stage = Column(String)  # new or existing
     business_model = Column(String)

@@ -22,7 +22,8 @@ from api.routes import (
     reports_routes,
     settings_routes,
     leakage_routes,
-    chatbot_routes
+    chatbot_routes,
+    user_routes
 )
 from core.config import settings
 from database.database import init_db
@@ -76,6 +77,9 @@ async def health_check():
 # Include routers
 # Authentication
 app.include_router(auth_routes.router, prefix="/api/auth", tags=["Authentication"])
+
+# Admin & User Management
+app.include_router(user_routes.router, prefix="/api/admin", tags=["Admin"])
 
 # Dashboard & Analytics
 app.include_router(dashboard_routes.router, prefix="/api/dashboard", tags=["Dashboard"])

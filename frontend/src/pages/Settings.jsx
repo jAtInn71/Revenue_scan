@@ -151,11 +151,8 @@ const Settings = () => {
               className="input-field"
             >
               <option value="">Select Role</option>
-              <option value="CFO">CFO</option>
-              <option value="Finance Manager">Finance Manager</option>
-              <option value="Revenue Analyst">Revenue Analyst</option>
-              <option value="Business Owner">Business Owner</option>
-              <option value="Other">Other</option>
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
             </select>
           </div>
 

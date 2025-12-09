@@ -48,6 +48,13 @@ async def signup(request: SignupRequest, db: Session = Depends(get_db)):
     """
     Register a new user account
     """
+    # Validate role
+    if request.role and request.role not in ["admin", "user"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Role must be either 'admin' or 'user'"
+        )
+    
     # Check if user already exists
     existing_user = db.query(User).filter(User.email == request.email).first()
     if existing_user:
@@ -62,7 +69,7 @@ async def signup(request: SignupRequest, db: Session = Depends(get_db)):
         hashed_password=get_password_hash(request.password),
         full_name=request.full_name,
         company_name=request.company_name,
-        role=request.role,
+        role=request.role or "user",  # Default to user if not specified
         is_active=True,
         created_at=datetime.utcnow()
     )

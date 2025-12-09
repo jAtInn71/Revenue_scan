@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     
     # OpenAI API (for AI-powered analysis)
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "your-openai-api-key-here")
-    OPENAI_MODEL: str = "gpt-4o-mini"
+    OPENAI_MODEL_NAME: str = "gpt-4o-mini"
     
     # JWT Authentication
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production-min-32-chars")

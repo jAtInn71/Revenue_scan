@@ -106,9 +106,8 @@ const Signup = ({ setIsAuthenticated }) => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition-all duration-300"
               >
                 <option value="">Select your role</option>
+                <option value="user">User</option>
                 <option value="admin">Admin</option>
-                <option value="manager">Manager</option>
-                <option value="analyst">Analyst</option>
               </select>
             </div>
 

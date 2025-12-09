@@ -1,5 +1,5 @@
 """
-Create demo users for testing - Admin, Manager, Analyst roles
+Create demo users for testing - Admin and User roles
 """
 import hashlib
 from database.database import SessionLocal, User, init_db
@@ -9,7 +9,7 @@ def get_password_hash(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 
 def create_demo_users():
-    """Create demo user accounts for all roles"""
+    """Create demo user accounts for admin and user roles"""
     init_db()
     db = SessionLocal()
     
@@ -19,21 +19,14 @@ def create_demo_users():
             "password": "admin123",
             "full_name": "Admin User",
             "company_name": "Revenue Advisor",
-            "role": "Admin"
+            "role": "admin"
         },
         {
-            "email": "manager@revenue.com",
-            "password": "manager123",
-            "full_name": "Manager User",
+            "email": "user@revenue.com",
+            "password": "user123",
+            "full_name": "Regular User",
             "company_name": "Revenue Advisor",
-            "role": "Manager"
-        },
-        {
-            "email": "analyst@revenue.com",
-            "password": "analyst123",
-            "full_name": "Analyst User",
-            "company_name": "Revenue Advisor",
-            "role": "Analyst"
+            "role": "user"
         }
     ]
     

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { analyzeExistingBusiness } from '../services/api'
+import { TrendingUp, AlertCircle, DollarSign, Target, Lightbulb, CheckCircle, AlertTriangle, BarChart3 } from 'lucide-react'
 
 const ExistingBusinessAnalyze = () => {
   const navigate = useNavigate()
@@ -32,7 +33,7 @@ const ExistingBusinessAnalyze = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Existing Business Analysis</h1>
+        <h1 className="text-3xl font-bold text-black mb-2">Existing Business Analysis</h1>
         <p className="text-gray-600">
           Identify and recover revenue leaks in your current operations
         </p>
@@ -41,7 +42,7 @@ const ExistingBusinessAnalyze = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 bg-white rounded-lg shadow p-6">
         {/* Business Information */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-green-600 border-b pb-2">Business Information</h2>
+          <h2 className="text-xl font-semibold text-black border-b-2 border-gray-300 pb-2">Business Information</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -95,7 +96,7 @@ const ExistingBusinessAnalyze = () => {
 
         {/* Financial Data */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-green-600 border-b pb-2">Financial Data</h2>
+          <h2 className="text-xl font-semibold text-black border-b-2 border-gray-300 pb-2">Financial Data</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -143,7 +144,7 @@ const ExistingBusinessAnalyze = () => {
 
         {/* Revenue Loss Indicators */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-green-600 border-b pb-2">Revenue Loss Indicators</h2>
+          <h2 className="text-xl font-semibold text-black border-b-2 border-gray-300 pb-2">Revenue Loss Indicators</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -222,7 +223,7 @@ const ExistingBusinessAnalyze = () => {
 
         {/* Operational Issues */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-green-600 border-b pb-2">Operational Issues</h2>
+          <h2 className="text-xl font-semibold text-black border-b-2 border-gray-300 pb-2">Operational Issues</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -273,7 +274,7 @@ const ExistingBusinessAnalyze = () => {
 
         {/* Systems & Tools */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-green-600 border-b pb-2">Systems & Tools</h2>
+          <h2 className="text-xl font-semibold text-black border-b-2 border-gray-300 pb-2">Systems & Tools</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-4">
@@ -328,7 +329,7 @@ const ExistingBusinessAnalyze = () => {
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium transition-colors"
+            className="flex-1 bg-gradient-to-r from-black to-gray-900 text-white py-3 px-6 rounded-lg hover:from-gray-900 hover:to-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium transition-colors shadow-md"
           >
             {loading ? 'Analyzing...' : 'Analyze Business'}
           </button>
@@ -345,72 +346,245 @@ const ExistingBusinessAnalyze = () => {
       {/* Results Display */}
       {analysisResult && (
         <div className="mt-8 space-y-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Analysis Results</h2>
+          <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+            <h2 className="text-2xl font-bold text-black mb-6">Comprehensive Analysis Report</h2>
             
             {/* Executive Summary */}
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-              <h3 className="font-semibold text-green-900 mb-2">Executive Summary</h3>
-              <p className="text-green-800">{analysisResult.executive_summary}</p>
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-300 rounded-lg p-5 mb-6">
+              <h3 className="font-semibold text-black mb-3 flex items-center gap-2">
+                <TrendingUp size={20} className="text-black" />
+                Executive Summary
+              </h3>
+              <p className="text-gray-800 leading-relaxed">{analysisResult.executive_summary}</p>
             </div>
 
             {/* Financial Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <p className="text-sm text-blue-600 mb-1">Monthly Revenue</p>
-                <p className="text-2xl font-bold text-blue-900">
-                  ₹{analysisResult.financial_summary.monthly_revenue.toLocaleString()}
-                </p>
-              </div>
-              <div className="bg-red-50 p-4 rounded-lg">
-                <p className="text-sm text-red-600 mb-1">Total Loss</p>
-                <p className="text-2xl font-bold text-red-900">
-                  ₹{analysisResult.total_identified_loss.toLocaleString()}
-                </p>
-              </div>
-              <div className="bg-yellow-50 p-4 rounded-lg">
-                <p className="text-sm text-yellow-600 mb-1">Loss %</p>
-                <p className="text-2xl font-bold text-yellow-900">
-                  {analysisResult.financial_summary.loss_percentage.toFixed(1)}%
-                </p>
-              </div>
-              <div className="bg-purple-50 p-4 rounded-lg">
-                <p className="text-sm text-purple-600 mb-1">Risk Level</p>
-                <p className="text-2xl font-bold text-purple-900 capitalize">
-                  {analysisResult.risk_level}
-                </p>
+            <div className="bg-white rounded-lg p-5 mb-6 border border-blue-100">
+              <h3 className="font-bold text-black mb-4 flex items-center gap-2">
+                <DollarSign size={20} className="text-black" />
+                Financial Summary
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-5 rounded-lg border border-gray-300 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 mb-2">
+                    <DollarSign size={18} className="text-black" />
+                    <p className="text-sm text-gray-700 font-medium">Monthly Revenue</p>
+                  </div>
+                  <p className="text-2xl font-bold text-black">
+                    ₹{analysisResult.financial_summary.monthly_revenue.toLocaleString()}
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-gray-100 to-gray-200 p-5 rounded-lg border border-gray-400 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle size={18} className="text-gray-900" />
+                    <p className="text-sm text-gray-700 font-medium">Total Loss</p>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">
+                    ₹{analysisResult.total_identified_loss.toLocaleString()}
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-5 rounded-lg border border-gray-300 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 mb-2">
+                    <BarChart3 size={18} className="text-black" />
+                    <p className="text-sm text-gray-700 font-medium">Loss Percentage</p>
+                  </div>
+                  <p className="text-2xl font-bold text-black">
+                    {analysisResult.financial_summary.loss_percentage.toFixed(1)}%
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-5 rounded-lg border border-gray-300 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Target size={18} className="text-black" />
+                    <p className="text-sm text-gray-700 font-medium">Risk Level</p>
+                  </div>
+                  <p className="text-2xl font-bold text-black capitalize">
+                    {analysisResult.risk_level}
+                  </p>
+                </div>
               </div>
             </div>
 
+            {/* AI Insights */}
+            {analysisResult.ai_insights && (
+              <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-5 mb-6 border border-gray-300">
+                <h3 className="font-bold text-black mb-3 flex items-center gap-2">
+                  <TrendingUp size={20} className="text-black" />
+                  AI Insights
+                </h3>
+                <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-line leading-relaxed">
+                  {analysisResult.ai_insights}
+                </div>
+              </div>
+            )}
+
+            {/* KPIs */}
+            {analysisResult.kpis && (
+              <div className="bg-white rounded-lg p-5 mb-6 border border-blue-100">
+                <h3 className="font-bold text-black mb-4 flex items-center gap-2">
+                  <BarChart3 size={20} className="text-black" />
+                  Key Performance Indicators
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {analysisResult.kpis.total_transactions && (
+                    <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg border border-gray-300">
+                      <p className="text-xs text-gray-600 font-medium mb-1">Total Transactions</p>
+                      <p className="text-xl font-bold text-black mt-1">
+                        {analysisResult.kpis.total_transactions.toLocaleString()}
+                      </p>
+                    </div>
+                  )}
+                  {analysisResult.kpis.revenue_per_transaction && (
+                    <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg border border-gray-300">
+                      <p className="text-xs text-gray-600 font-medium mb-1">Revenue per Transaction</p>
+                      <p className="text-xl font-bold text-black mt-1">
+                        ₹{analysisResult.kpis.revenue_per_transaction.toFixed(2)}
+                      </p>
+                    </div>
+                  )}
+                  {analysisResult.kpis.revenue_at_risk && (
+                    <div className="bg-gradient-to-br from-gray-100 to-gray-200 p-4 rounded-lg border border-gray-400">
+                      <p className="text-xs text-gray-600 font-medium mb-1">Revenue at Risk</p>
+                      <p className="text-xl font-bold text-gray-900 mt-1">
+                        ₹{analysisResult.kpis.revenue_at_risk.toLocaleString()}
+                      </p>
+                    </div>
+                  )}
+                  {analysisResult.kpis.loss_to_revenue_ratio && (
+                    <div className="bg-gradient-to-br from-gray-100 to-gray-200 p-4 rounded-lg border border-gray-400">
+                      <p className="text-xs text-gray-600 font-medium mb-1">Loss to Revenue Ratio</p>
+                      <p className="text-xl font-bold text-gray-900 mt-1">
+                        {(analysisResult.kpis.loss_to_revenue_ratio * 100).toFixed(2)}%
+                      </p>
+                    </div>
+                  )}
+                  {analysisResult.kpis.average_loss_per_issue && (
+                    <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg border border-gray-300">
+                      <p className="text-xs text-gray-600 font-medium mb-1">Avg Loss per Issue</p>
+                      <p className="text-xl font-bold text-black mt-1">
+                        ₹{analysisResult.kpis.average_loss_per_issue.toFixed(2)}
+                      </p>
+                    </div>
+                  )}
+                  {analysisResult.kpis.recovery_potential && (
+                    <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg border border-gray-300">
+                      <p className="text-xs text-gray-600 font-medium mb-1">Recovery Potential</p>
+                      <p className="text-xl font-bold text-black mt-1">
+                        ₹{analysisResult.kpis.recovery_potential.toLocaleString()}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Recommendations */}
+            {analysisResult.recommendations && analysisResult.recommendations.length > 0 && (
+              <div className="bg-white rounded-lg p-5 mb-6 border border-blue-100">
+                <h3 className="font-bold text-black mb-4 flex items-center gap-2">
+                  <Lightbulb size={20} className="text-black" />
+                  Top Recommendations
+                </h3>
+                <div className="space-y-3">
+                  {analysisResult.recommendations.map((rec, index) => (
+                    <div key={index} className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-300 hover:border-gray-400 transition-colors">
+                      <div className="flex items-start gap-3">
+                        <span className="flex-shrink-0 w-7 h-7 bg-black text-white rounded-full flex items-center justify-center text-sm font-bold">
+                          {index + 1}
+                        </span>
+                        <p className="text-sm text-gray-800 flex-1 leading-relaxed">{rec}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Leakage Breakdown */}
             {analysisResult.leakage_breakdown && (
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <h3 className="font-semibold text-gray-900 mb-3">Loss Breakdown</h3>
+              <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-5 mb-6 border border-gray-300">
+                <h3 className="font-semibold text-black mb-4 flex items-center gap-2">
+                  <BarChart3 size={20} className="text-black" />
+                  Detailed Loss Breakdown by Category
+                </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  <div className="bg-white p-3 rounded border">
-                    <p className="text-xs text-gray-600">Refunds</p>
-                    <p className="text-lg font-bold text-red-600">₹{analysisResult.leakage_breakdown.refunds.toLocaleString()}</p>
+                  <div className="bg-white p-4 rounded-lg border border-gray-300 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertTriangle size={16} className="text-gray-900" />
+                      <p className="text-xs text-gray-600 font-medium">Refunds</p>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900">₹{analysisResult.leakage_breakdown.refunds.toLocaleString()}</p>
                   </div>
-                  <div className="bg-white p-3 rounded border">
-                    <p className="text-xs text-gray-600">Returns</p>
-                    <p className="text-lg font-bold text-orange-600">₹{analysisResult.leakage_breakdown.returns.toLocaleString()}</p>
+                  <div className="bg-white p-4 rounded-lg border border-gray-300 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertCircle size={16} className="text-gray-900" />
+                      <p className="text-xs text-gray-600 font-medium">Returns</p>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900">₹{analysisResult.leakage_breakdown.returns.toLocaleString()}</p>
                   </div>
-                  <div className="bg-white p-3 rounded border">
-                    <p className="text-xs text-gray-600">Discounts</p>
-                    <p className="text-lg font-bold text-yellow-600">₹{analysisResult.leakage_breakdown.discounts.toLocaleString()}</p>
+                  <div className="bg-white p-4 rounded-lg border border-gray-300 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-2 mb-2">
+                      <DollarSign size={16} className="text-gray-900" />
+                      <p className="text-xs text-gray-600 font-medium">Discounts</p>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900">₹{analysisResult.leakage_breakdown.discounts.toLocaleString()}</p>
                   </div>
-                  <div className="bg-white p-3 rounded border">
-                    <p className="text-xs text-gray-600">Uncollected</p>
-                    <p className="text-lg font-bold text-purple-600">₹{analysisResult.leakage_breakdown.uncollected.toLocaleString()}</p>
+                  <div className="bg-white p-4 rounded-lg border border-gray-300 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertCircle size={16} className="text-gray-900" />
+                      <p className="text-xs text-gray-600 font-medium">Uncollected</p>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900">₹{analysisResult.leakage_breakdown.uncollected.toLocaleString()}</p>
                   </div>
-                  <div className="bg-white p-3 rounded border">
-                    <p className="text-xs text-gray-600">Inventory Shrinkage</p>
-                    <p className="text-lg font-bold text-pink-600">₹{analysisResult.leakage_breakdown.inventory_shrinkage.toLocaleString()}</p>
+                  <div className="bg-white p-4 rounded-lg border border-gray-300 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-2 mb-2">
+                      <BarChart3 size={16} className="text-gray-900" />
+                      <p className="text-xs text-gray-600 font-medium">Inventory Shrinkage</p>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900">₹{analysisResult.leakage_breakdown.inventory_shrinkage.toLocaleString()}</p>
                   </div>
-                  <div className="bg-white p-3 rounded border">
-                    <p className="text-xs text-gray-600">Unrecorded Sales</p>
-                    <p className="text-lg font-bold text-indigo-600">₹{analysisResult.leakage_breakdown.unrecorded_sales.toLocaleString()}</p>
+                  <div className="bg-white p-4 rounded-lg border border-gray-300 hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp size={16} className="text-gray-900" />
+                      <p className="text-xs text-gray-600 font-medium">Unrecorded Sales</p>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900">₹{analysisResult.leakage_breakdown.unrecorded_sales.toLocaleString()}</p>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Top Issues */}
+            {analysisResult.top_issues && analysisResult.top_issues.length > 0 && (
+              <div className="bg-white rounded-lg p-5 mb-6 border border-red-100">
+                <h3 className="font-bold text-black mb-4 flex items-center gap-2">
+                  <AlertCircle size={20} className="text-black" />
+                  Critical Issues Detected
+                </h3>
+                <div className="space-y-3">
+                  {analysisResult.top_issues.map((issue, idx) => (
+                    <div key={idx} className="flex items-start gap-3 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-300 hover:border-gray-400 transition-colors">
+                      <div className={`flex-shrink-0 p-2 rounded-lg ${ issue.severity === 'high' ? 'bg-black' : 'bg-gray-600'}`}>
+                        <AlertTriangle size={20} className="text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between mb-2">
+                          <h4 className="font-bold text-black">{issue.type || issue.category}</h4>
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            issue.severity === 'high' ? 'bg-black text-white border border-black' :
+                            'bg-gray-600 text-white border border-gray-600'
+                          }`}>
+                            {issue.severity?.toUpperCase() || 'ALERT'}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-700 mb-2">{issue.description}</p>
+                        {issue.amount > 0 && (
+                          <p className="text-sm text-black font-semibold">
+                            Impact: ₹{issue.amount.toLocaleString()}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -418,23 +592,34 @@ const ExistingBusinessAnalyze = () => {
             {/* Leakage Points */}
             {analysisResult.leakage_points && analysisResult.leakage_points.length > 0 && (
               <div className="mb-6">
-                <h3 className="text-xl font-semibold mb-4">Identified Issues ({analysisResult.leakage_count})</h3>
+                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                  <AlertCircle size={22} className="text-black" />
+                  Identified Issues ({analysisResult.leakage_count})
+                </h3>
                 <div className="space-y-3">
                   {analysisResult.leakage_points.map((point, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-semibold text-gray-900">{point.category}</h4>
+                    <div key={index} className="border border-gray-200 rounded-lg p-4 hover:border-black transition-colors bg-gradient-to-r from-white to-gray-50">
+                      <div className="flex justify-between items-start mb-3">
+                        <h4 className="font-semibold text-black">{point.category}</h4>
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          point.severity === 'high' ? 'bg-red-100 text-red-800' :
-                          point.severity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-blue-100 text-blue-800'
+                          point.severity === 'high' ? 'bg-black text-white border border-black' :
+                          point.severity === 'medium' ? 'bg-gray-600 text-white border border-gray-600' :
+                          'bg-gray-400 text-white border border-gray-400'
                         }`}>
                           {point.severity.toUpperCase()}
                         </span>
                       </div>
                       <p className="text-gray-700 mb-2">{point.description}</p>
-                      <p className="text-sm text-gray-600 mb-2"><strong>Impact:</strong> {point.impact}</p>
-                      <p className="text-sm text-green-600"><strong>Recommendation:</strong> {point.recommendation}</p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3 pt-3 border-t border-gray-200">
+                        <p className="text-sm text-gray-600 flex items-center gap-1">
+                          <AlertCircle size={14} className="text-black" />
+                          <strong>Impact:</strong> {point.impact}
+                        </p>
+                        <p className="text-sm text-gray-700 flex items-center gap-1">
+                          <Lightbulb size={14} className="text-black" />
+                          <strong>Recommendation:</strong> {point.recommendation}
+                        </p>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -444,16 +629,28 @@ const ExistingBusinessAnalyze = () => {
             {/* Recovery Strategies */}
             {analysisResult.recovery_strategies && analysisResult.recovery_strategies.length > 0 && (
               <div>
-                <h3 className="text-xl font-semibold mb-4">Recovery Strategies</h3>
+                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                  <Lightbulb size={22} className="text-black" />
+                  Recovery Strategies
+                </h3>
                 <div className="space-y-3">
                   {analysisResult.recovery_strategies.map((strategy, index) => (
-                    <div key={index} className="border border-green-200 bg-green-50 rounded-lg p-4">
-                      <h4 className="font-semibold text-green-900 mb-2">{strategy.name}</h4>
-                      <p className="text-gray-700 mb-2">{strategy.description}</p>
-                      <div className="flex gap-4 text-sm">
-                        <span className="text-gray-600"><strong>Impact:</strong> {strategy.impact}</span>
-                        <span className="text-gray-600"><strong>Timeline:</strong> {strategy.timeline}</span>
-                        <span className="text-green-600"><strong>Recovery:</strong> {strategy.estimated_recovery}</span>
+                    <div key={index} className="border border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <h4 className="font-semibold text-black mb-2 flex items-center gap-2">
+                        <CheckCircle size={18} className="text-black" />
+                        {strategy.name}
+                      </h4>
+                      <p className="text-gray-700 mb-3">{strategy.description}</p>
+                      <div className="flex flex-wrap gap-4 text-sm">
+                        <span className="text-gray-600 bg-white px-3 py-1 rounded-full border border-gray-200">
+                          <strong>Impact:</strong> {strategy.impact}
+                        </span>
+                        <span className="text-gray-600 bg-white px-3 py-1 rounded-full border border-gray-200">
+                          <strong>Timeline:</strong> {strategy.timeline}
+                        </span>
+                        <span className="text-black bg-white px-3 py-1 rounded-full border border-gray-300 font-medium">
+                          <strong>Recovery:</strong> {strategy.estimated_recovery}
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -463,7 +660,7 @@ const ExistingBusinessAnalyze = () => {
 
             <button
               onClick={() => setAnalysisResult(null)}
-              className="mt-6 w-full py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="mt-6 w-full py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
             >
               Run New Analysis
             </button>
