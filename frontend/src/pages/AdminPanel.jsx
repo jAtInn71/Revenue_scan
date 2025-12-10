@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, Eye, Shield, UserX, Search, ChevronDown, ChevronRight, FileText, Upload, TrendingUp } from 'lucide-react';
+import { Users, Eye, Shield, UserX, Search, ChevronDown, ChevronRight, FileText, Upload, TrendingUp, DollarSign, AlertTriangle, BarChart3, Activity } from 'lucide-react';
 import api from '../services/api';
 
 export default function AdminPanel() {
@@ -13,9 +13,12 @@ export default function AdminPanel() {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedUser, setExpandedUser] = useState(null);
   const [activeTab, setActiveTab] = useState('overview'); // overview, analyses, uploads
+  const [systemMetrics, setSystemMetrics] = useState(null);
+  const [metricsLoading, setMetricsLoading] = useState(false);
 
   useEffect(() => {
     fetchUsers();
+    fetchSystemMetrics();
   }, []);
 
   const fetchUsers = async () => {
@@ -32,6 +35,20 @@ export default function AdminPanel() {
       alert(`Error: ${errorMsg}. Make sure you are logged in as admin and the backend is running.`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSystemMetrics = async () => {
+    setMetricsLoading(true);
+    try {
+      const response = await api.get('/dashboard/admin');
+      console.log('System metrics fetched:', response.data);
+      setSystemMetrics(response.data.system_metrics);
+    } catch (error) {
+      console.error('Failed to fetch system metrics:', error);
+      // Don't alert for metrics - just log the error
+    } finally {
+      setMetricsLoading(false);
     }
   };
 
@@ -127,9 +144,9 @@ export default function AdminPanel() {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(amount || 0);
@@ -150,6 +167,84 @@ export default function AdminPanel() {
             </div>
           </div>
         </div>
+
+        {/* System Metrics */}
+        {systemMetrics && (
+          <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {/* Total Users */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Total Users</p>
+                  <p className="text-3xl font-bold text-gray-900">{systemMetrics.totalUsers}</p>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-gray-700 to-gray-500 rounded-lg">
+                  <Users className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </div>
+
+            {/* Active Users */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Active Users</p>
+                  <p className="text-3xl font-bold text-green-600">{systemMetrics.activeUsers}</p>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-green-600 to-green-500 rounded-lg">
+                  <Activity className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </div>
+
+            {/* Total Revenue */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
+                  <p className="text-2xl font-bold text-gray-900">₹{systemMetrics.totalRevenue?.toLocaleString() || 0}</p>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg">
+                  <DollarSign className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </div>
+
+            {/* Total Leakage */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Total Leakage</p>
+                  <p className="text-2xl font-bold text-red-600">₹{systemMetrics.totalLeakage?.toLocaleString() || 0}</p>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-red-600 to-red-500 rounded-lg">
+                  <AlertTriangle className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </div>
+
+            {/* Average Risk Score */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Avg Risk Score</p>
+                  <p className="text-3xl font-bold text-orange-600">{systemMetrics.avgRiskScore?.toFixed(1) || '0.0'}</p>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-orange-600 to-orange-500 rounded-lg">
+                  <BarChart3 className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {metricsLoading && !systemMetrics && (
+          <div className="mb-8">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <p className="text-center text-gray-500">Loading system metrics...</p>
+            </div>
+          </div>
+        )}
 
         {/* Error Banner */}
         {error && (

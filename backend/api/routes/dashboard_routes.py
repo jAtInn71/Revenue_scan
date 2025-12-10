@@ -17,6 +17,78 @@ from services.auth_service import get_current_user
 
 router = APIRouter()
 
+@router.get("/admin")
+async def get_admin_dashboard_data(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get system-wide dashboard data for admin - shows aggregated data from all users
+    """
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Get all users count
+    total_users = db.query(User).count()
+    active_users = db.query(User).filter(User.is_active == True).count()
+    admin_count = db.query(User).filter(User.role == "admin").count()
+    
+    # Get all uploads (system-wide)
+    all_uploads = db.query(UploadedData).filter(
+        UploadedData.status == "completed"
+    ).all()
+    
+    # Calculate system-wide metrics
+    total_revenue = 0
+    total_leakage = 0
+    total_analyses = db.query(BusinessAnalysis).count()
+    total_uploads_count = len(all_uploads)
+    
+    for upload in all_uploads:
+        if upload.leakage_data:
+            upload_leakage = upload.leakage_data.get("total_amount", 0)
+            total_leakage += upload_leakage
+        
+        if upload.data_summary:
+            column_details = upload.data_summary.get("column_details", {})
+            for col_name, details in column_details.items():
+                col_sum = details.get("sum", 0)
+                if col_sum:
+                    col_lower = col_name.lower()
+                    if any(term in col_lower for term in ['revenue', 'sales', 'income', 'amount', 'total', 'price']):
+                        total_revenue += col_sum
+    
+    # Calculate average risk score
+    analyses = db.query(BusinessAnalysis).all()
+    avg_risk_score = sum(a.risk_score for a in analyses) / len(analyses) if analyses else 0
+    
+    # Get recent user activities
+    recent_users = db.query(User).order_by(User.created_at.desc()).limit(5).all()
+    
+    return {
+        "system_metrics": {
+            "totalUsers": total_users,
+            "activeUsers": active_users,
+            "adminCount": admin_count,
+            "totalRevenue": round(total_revenue, 2),
+            "totalLeakage": round(total_leakage, 2),
+            "leakagePercentage": round((total_leakage / total_revenue * 100) if total_revenue > 0 else 0, 2),
+            "totalAnalyses": total_analyses,
+            "totalUploads": total_uploads_count,
+            "avgRiskScore": round(avg_risk_score, 2)
+        },
+        "recent_users": [
+            {
+                "id": user.id,
+                "email": user.email,
+                "full_name": user.full_name,
+                "role": user.role,
+                "created_at": user.created_at.isoformat()
+            }
+            for user in recent_users
+        ]
+    }
+
 @router.get("/")
 async def get_dashboard_data(
     current_user: User = Depends(get_current_user),

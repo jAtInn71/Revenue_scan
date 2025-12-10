@@ -62,6 +62,13 @@ async def get_all_users(
     verify_admin(current_user)
     
     users = db.query(User).order_by(User.created_at.desc()).all()
+    
+    # Fix any NULL roles to default 'user'
+    for user in users:
+        if user.role is None:
+            user.role = "user"
+    db.commit()
+    
     return users
 
 @router.get("/users/{user_id}", response_model=UserDetailResponse)

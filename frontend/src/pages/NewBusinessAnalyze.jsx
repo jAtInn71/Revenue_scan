@@ -7,14 +7,27 @@ import { TrendingUp, AlertCircle, DollarSign, Target, Lightbulb, CheckCircle, XC
 
 const NewBusinessAnalyze = () => {
   const navigate = useNavigate()
-  const { register, handleSubmit, formState: { errors } } = useForm()
+  const { register, handleSubmit, formState: { errors }, watch } = useForm()
   const [loading, setLoading] = useState(false)
   const [analysisResult, setAnalysisResult] = useState(null)
+  const [showOtherBusinessModel, setShowOtherBusinessModel] = useState(false)
+  const [showOtherPricingStrategy, setShowOtherPricingStrategy] = useState(false)
+  
+  // Watch for "other" selection
+  const businessModel = watch('business_model')
+  const pricingStrategy = watch('pricing_strategy')
 
   const onSubmit = async (data) => {
     setLoading(true)
     try {
-      const response = await analyzeNewBusiness(data)
+      // Use custom values if "other" is selected
+      const submitData = {
+        ...data,
+        business_model: data.business_model === 'other' ? data.other_business_model : data.business_model,
+        pricing_strategy: data.pricing_strategy === 'other' ? data.other_pricing_strategy : data.pricing_strategy,
+      }
+      
+      const response = await analyzeNewBusiness(submitData)
       
       if (response.success) {
         setAnalysisResult(response.analysis)
@@ -68,6 +81,7 @@ const NewBusinessAnalyze = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Business Model *</label>
               <select
                 {...register('business_model', { required: 'Required' })}
+                onChange={(e) => setShowOtherBusinessModel(e.target.value === 'other')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Select...</option>
@@ -78,13 +92,30 @@ const NewBusinessAnalyze = () => {
                 <option value="manufacturing">Manufacturing</option>
                 <option value="subscription">Subscription</option>
                 <option value="marketplace">Marketplace</option>
+                <option value="other">Other (Specify)</option>
               </select>
+              {errors.business_model && <p className="text-red-500 text-sm mt-1">{errors.business_model.message}</p>}
+              
+              {/* Show text input if "Other" is selected */}
+              {(showOtherBusinessModel || businessModel === 'other') && (
+                <div className="mt-2">
+                  <input
+                    {...register('other_business_model', { 
+                      required: businessModel === 'other' ? 'Please specify your business model' : false 
+                    })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter your business model"
+                  />
+                  {errors.other_business_model && <p className="text-red-500 text-sm mt-1">{errors.other_business_model.message}</p>}
+                </div>
+              )}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Pricing Strategy *</label>
               <select
                 {...register('pricing_strategy', { required: 'Required' })}
+                onChange={(e) => setShowOtherPricingStrategy(e.target.value === 'other')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Select...</option>
@@ -94,7 +125,23 @@ const NewBusinessAnalyze = () => {
                 <option value="dynamic">Dynamic</option>
                 <option value="freemium">Freemium</option>
                 <option value="tiered">Tiered</option>
+                <option value="other">Other (Specify)</option>
               </select>
+              {errors.pricing_strategy && <p className="text-red-500 text-sm mt-1">{errors.pricing_strategy.message}</p>}
+              
+              {/* Show text input if "Other" is selected */}
+              {(showOtherPricingStrategy || pricingStrategy === 'other') && (
+                <div className="mt-2">
+                  <input
+                    {...register('other_pricing_strategy', { 
+                      required: pricingStrategy === 'other' ? 'Please specify your pricing strategy' : false 
+                    })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter your pricing strategy"
+                  />
+                  {errors.other_pricing_strategy && <p className="text-red-500 text-sm mt-1">{errors.other_pricing_strategy.message}</p>}
+                </div>
+              )}
             </div>
           </div>
         </div>

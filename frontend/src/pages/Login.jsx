@@ -145,20 +145,7 @@ const Login = ({ setIsAuthenticated }) => {
         </div>
 
         {/* Features Section */}
-        <div className="mt-8 grid grid-cols-3 gap-3">
-          <div className="bg-white rounded-xl p-4 border border-gray-200 text-center hover:border-black hover:shadow-lg transition-all duration-300 transform hover:scale-105 animate-slide-up">
-            <MdSmartToy className="text-3xl mx-auto mb-2 text-black" />
-            <p className="text-xs text-gray-600 font-medium">AI Insights</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-200 text-center hover:border-black hover:shadow-lg transition-all duration-300 transform hover:scale-105 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-            <MdAnalytics className="text-3xl mx-auto mb-2 text-black" />
-            <p className="text-xs text-gray-600 font-medium">Analytics</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-200 text-center hover:border-black hover:shadow-lg transition-all duration-300 transform hover:scale-105 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <MdLock className="text-3xl mx-auto mb-2 text-black" />
-            <p className="text-xs text-gray-600 font-medium">Secure</p>
-          </div>
-        </div>
+       
       </div>
     </div>
   );
