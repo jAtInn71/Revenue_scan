@@ -424,7 +424,7 @@ const Upload = () => {
                         <div className="bg-indigo-50 p-3 rounded-lg">
                           <p className="text-xs text-gray-600">Revenue per Transaction</p>
                           <p className="text-lg font-bold text-indigo-600 mt-1">
-                            ${uploadResult.kpis.revenue_per_transaction?.toFixed(2) || 0}
+                            ₹{uploadResult.kpis.revenue_per_transaction?.toFixed(2) || 0}
                           </p>
                         </div>
                         <div className="bg-indigo-50 p-3 rounded-lg">

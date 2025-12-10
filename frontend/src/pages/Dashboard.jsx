@@ -2,30 +2,9 @@ import { useState, useEffect } from 'react';
 import { getDashboardData } from '../services/api';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { MdAttachMoney, MdWarning, MdAnalytics, MdTrendingUp } from 'react-icons/md';
-
-// Sample data for initial display
-const SAMPLE_REVENUE_TREND = [
-  { month: 'Jan', revenue: 0, target: 50000 },
-  { month: 'Feb', revenue: 0, target: 50000 },
-  { month: 'Mar', revenue: 0, target: 50000 },
-  { month: 'Apr', revenue: 0, target: 50000 },
-  { month: 'May', revenue: 0, target: 50000 },
-  { month: 'Jun', revenue: 0, target: 50000 },
-];
-
-const SAMPLE_CATEGORY_DATA = [
-  { name: 'Product A', value: 0, percentage: 0 },
-  { name: 'Product B', value: 0, percentage: 0 },
-  { name: 'Product C', value: 0, percentage: 0 },
-  { name: 'Product D', value: 0, percentage: 0 },
-];
-
-const SAMPLE_LEAKAGE_DATA = [
-  { category: 'Discounts', amount: 0 },
-  { category: 'Returns', amount: 0 },
-  { category: 'Errors', amount: 0 },
-  { category: 'Fraud', amount: 0 },
-];
+import { IoAlertCircle, IoCheckmarkCircle } from 'react-icons/io5';
+import { HiLightBulb } from 'react-icons/hi';
+import { BiSolidBarChartAlt2 } from 'react-icons/bi';
 
 const Dashboard = () => {
   const [data, setData] = useState(null);
@@ -93,10 +72,43 @@ const Dashboard = () => {
 
   const COLORS = ['#000000', '#404040', '#808080', '#c0c0c0'];
 
-  // Get chart data - use real data if available, otherwise use sample data
-  const revenueTrendData = data?.metrics?.revenueTrend || SAMPLE_REVENUE_TREND;
-  const categoryData = data?.metrics?.categoryBreakdown || SAMPLE_CATEGORY_DATA;
-  const leakageData = data?.metrics?.leakageByCategory || SAMPLE_LEAKAGE_DATA;
+  // Create summary metrics for quick view and graphs
+  const metrics = {
+    totalRevenue: data?.metrics?.totalRevenue || 0,
+    leakageDetected: data?.metrics?.leakageDetected || 0,
+    riskScore: data?.metrics?.riskScore || 0,
+    analysesRun: data?.metrics?.analysesRun || 0,
+    netProfit: data?.metrics?.netProfit || 0,
+  };
+
+  // Get chart data from backend (only if available)
+  const hasChartData = data?.charts && (
+    (data.charts.revenueVsLeakage && data.charts.revenueVsLeakage.length > 0) ||
+    (data.charts.leakageByCategory && data.charts.leakageByCategory.length > 0) ||
+    (data.charts.leakageBySegment && data.charts.leakageBySegment.length > 0)
+  );
+
+  // Revenue vs Leakage Trend (from uploaded data)
+  const revenueTrendData = data?.charts?.revenueVsLeakage || [];
+
+  // Leakage by Category (from uploaded data)
+  const leakageCategoryData = data?.charts?.leakageByCategory || [];
+
+  // Leakage by Severity/Segment (from uploaded data)
+  const leakageSeverityData = data?.charts?.leakageBySegment || [];
+
+  // Create metrics comparison data for bar chart (always show)
+  const metricsComparisonData = [
+    { name: 'Total Revenue', value: metrics.totalRevenue, color: '#000000' },
+    { name: 'Net Profit', value: metrics.netProfit, color: '#404040' },
+    { name: 'Leakage', value: metrics.leakageDetected, color: '#DC2626' },
+  ];
+
+  // Create risk and analyses data for dual axis chart (always show)
+  const performanceData = [
+    { metric: 'Risk Score', value: metrics.riskScore, max: 100 },
+    { metric: 'Analyses', value: metrics.analysesRun, max: metrics.analysesRun > 0 ? metrics.analysesRun : 10 },
+  ];
 
   return (
     <div className="space-y-6">
@@ -125,9 +137,9 @@ const Dashboard = () => {
         {/* Total Revenue */}
         <div className="bg-white rounded-xl shadow-md border border-gray-200 p-5 md:p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 animate-slide-up">
           <div className="flex items-start justify-between mb-4">
-            <div>
+            <div className="flex-1 min-w-0 pr-2">
               <p className="text-sm font-medium text-gray-600 mb-2">Total Revenue</p>
-              <p className="text-2xl md:text-3xl font-bold text-black">
+              <p className="text-lg md:text-xl lg:text-2xl font-bold text-black truncate" title={`₹${data?.metrics?.totalRevenue?.toLocaleString() || '0'}`}>
                 ₹{data?.metrics?.totalRevenue?.toLocaleString() || '0'}
               </p>
             </div>
@@ -135,7 +147,7 @@ const Dashboard = () => {
               <MdAttachMoney className="text-white text-xl md:text-2xl" />
             </div>
           </div>
-          <p className="text-xs md:text-sm text-gray-600">
+          <p className="text-xs md:text-sm text-gray-600 truncate" title={`Net Profit: ₹${data?.metrics?.netProfit?.toLocaleString() || '0'} (${data?.metrics?.profitMargin?.toFixed(1) || '0'}%)`}>
             Net Profit: ₹{data?.metrics?.netProfit?.toLocaleString() || '0'} ({data?.metrics?.profitMargin?.toFixed(1) || '0'}%)
           </p>
         </div>
@@ -143,9 +155,9 @@ const Dashboard = () => {
         {/* Revenue Leakage */}
         <div className="bg-white rounded-xl shadow-md border border-gray-200 p-5 md:p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 animate-slide-up">
           <div className="flex items-start justify-between mb-4">
-            <div>
+            <div className="flex-1 min-w-0 pr-2">
               <p className="text-sm font-medium text-gray-600 mb-2">Revenue Leakage</p>
-              <p className="text-2xl md:text-3xl font-bold text-red-600">
+              <p className="text-lg md:text-xl lg:text-2xl font-bold text-red-600 truncate" title={`₹${data?.metrics?.leakageDetected?.toLocaleString() || '0'}`}>
                 ₹{data?.metrics?.leakageDetected?.toLocaleString() || '0'}
               </p>
             </div>
@@ -153,7 +165,7 @@ const Dashboard = () => {
               <MdWarning className="text-white text-xl md:text-2xl" />
             </div>
           </div>
-          <p className="text-xs md:text-sm font-medium text-red-600">
+          <p className="text-xs md:text-sm font-medium text-red-600 truncate" title={`${data?.metrics?.leakagePercentage?.toFixed(1) || '0'}% of revenue`}>
             {data?.metrics?.leakagePercentage?.toFixed(1) || '0'}% of revenue
           </p>
         </div>
@@ -161,9 +173,9 @@ const Dashboard = () => {
         {/* Risk Level */}
         <div className="bg-white rounded-xl shadow-md border border-gray-200 p-5 md:p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 animate-slide-up">
           <div className="flex items-start justify-between mb-4">
-            <div>
+            <div className="flex-1 min-w-0 pr-2">
               <p className="text-sm font-medium text-gray-600 mb-2">Risk Level</p>
-              <p className="text-2xl md:text-3xl font-bold text-black">
+              <p className="text-lg md:text-xl lg:text-2xl font-bold text-black truncate" title={String(data?.metrics?.riskScore || 0)}>
                 {data?.metrics?.riskScore || 0}
               </p>
             </div>
@@ -171,12 +183,12 @@ const Dashboard = () => {
               <MdAnalytics className="text-white text-xl md:text-2xl" />
             </div>
           </div>
-          <p className={`text-xs md:text-sm font-medium ${
+          <p className={`text-xs md:text-sm font-medium truncate ${
             data?.metrics?.riskLevel === 'Critical' ? 'text-red-600' :
             data?.metrics?.riskLevel === 'High' ? 'text-orange-600' :
             data?.metrics?.riskLevel === 'Medium' ? 'text-yellow-600' :
             'text-green-600'
-          }`}>
+          }`} title={data?.metrics?.riskLevel || 'Low'}>
             {data?.metrics?.riskLevel || 'Low'}
           </p>
         </div>
@@ -184,9 +196,9 @@ const Dashboard = () => {
         {/* Total Analyses */}
         <div className="bg-white rounded-xl shadow-md border border-gray-200 p-5 md:p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 animate-slide-up">
           <div className="flex items-start justify-between mb-4">
-            <div>
+            <div className="flex-1 min-w-0 pr-2">
               <p className="text-sm font-medium text-gray-600 mb-2">Total Analyses</p>
-              <p className="text-2xl md:text-3xl font-bold text-black">
+              <p className="text-lg md:text-xl lg:text-2xl font-bold text-black truncate" title={String(data?.metrics?.analysesRun || 0)}>
                 {data?.metrics?.analysesRun || 0}
               </p>
             </div>
@@ -194,7 +206,7 @@ const Dashboard = () => {
               <MdTrendingUp className="text-xl md:text-2xl" />
             </div>
           </div>
-          <p className="text-xs md:text-sm text-gray-600">
+          <p className="text-xs md:text-sm text-gray-600 truncate" title={`${data?.metrics?.totalTransactions?.toLocaleString() || '0'} rows analyzed`}>
             {data?.metrics?.totalTransactions?.toLocaleString() || '0'} rows analyzed
           </p>
         </div>
@@ -209,11 +221,16 @@ const Dashboard = () => {
           'bg-green-50 border-green-200'
         }`}>
           <div className="flex items-start gap-4">
-            <div className="text-3xl flex-shrink-0">
-              {data.aiInsight.title.includes('Critical') ? '🚨' :
-               data.aiInsight.title.includes('Significant') ? '⚠️' :
-               data.aiInsight.title.includes('Optimization') ? '💡' :
-               '✅'}
+            <div className="flex-shrink-0">
+              {data.aiInsight.title.includes('Critical') ? (
+                <MdWarning className="w-10 h-10 text-red-600" />
+              ) : data.aiInsight.title.includes('Significant') ? (
+                <IoAlertCircle className="w-10 h-10 text-orange-600" />
+              ) : data.aiInsight.title.includes('Optimization') ? (
+                <HiLightBulb className="w-10 h-10 text-gray-600" />
+              ) : (
+                <IoCheckmarkCircle className="w-10 h-10 text-green-600" />
+              )}
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-bold text-black mb-2">{data.aiInsight.title}</h3>
@@ -225,84 +242,150 @@ const Dashboard = () => {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Revenue Trend Chart */}
-        <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 animate-slide-up">
-          <h3 className="text-lg font-bold text-black mb-4">Revenue Trend</h3>
+        {/* Metrics Overview Bar Chart - Always show */}
+        <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 animate-slide-up">
+          <h3 className="text-lg font-bold text-black mb-4">Financial Metrics Overview</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={revenueTrendData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-              <XAxis dataKey="month" stroke="#808080" />
-              <YAxis stroke="#808080" />
+            <BarChart data={metricsComparisonData} barSize={40}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" />
+              <XAxis dataKey="name" stroke="#000000" style={{ fontSize: '12px', fontWeight: '500' }} />
+              <YAxis stroke="#000000" tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}K`} style={{ fontSize: '12px', fontWeight: '500' }} />
               <Tooltip 
                 formatter={(value) => `₹${value.toLocaleString()}`}
-                contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '8px' }}
+                contentStyle={{ backgroundColor: '#000000', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '500' }}
+                labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
               />
-              <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="revenue" 
-                stroke="#000000" 
-                strokeWidth={3} 
-                dot={{ fill: '#000000', r: 5 }} 
-                name="Actual Revenue"
-              />
-              <Line 
-                type="monotone" 
-                dataKey="target" 
-                stroke="#808080" 
-                strokeWidth={2} 
-                strokeDasharray="5 5"
-                dot={{ fill: '#808080', r: 4 }} 
-                name="Target"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Leakage by Category Chart */}
-        <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 animate-slide-up">
-          <h3 className="text-lg font-bold text-black mb-4">Leakage by Category</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={leakageData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-              <XAxis dataKey="category" stroke="#808080" />
-              <YAxis stroke="#808080" />
-              <Tooltip 
-                formatter={(value) => `₹${value.toLocaleString()}`}
-                contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '8px' }}
-              />
-              <Bar dataKey="amount" fill="#000000" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                {metricsComparisonData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
+
+        {/* Risk & Performance Chart - Always show */}
+        <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 animate-slide-up">
+          <h3 className="text-lg font-bold text-black mb-4">Risk & Performance Metrics</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={performanceData} layout="vertical" barSize={30}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" />
+              <XAxis type="number" stroke="#000000" style={{ fontSize: '12px', fontWeight: '500' }} />
+              <YAxis type="category" dataKey="metric" stroke="#000000" style={{ fontSize: '12px', fontWeight: '500' }} />
+              <Tooltip 
+                contentStyle={{ backgroundColor: '#000000', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '500' }}
+                labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
+              />
+              <Bar dataKey="value" fill="#000000" radius={[0, 8, 8, 0]}>
+                {performanceData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={index === 0 ? '#DC2626' : '#000000'} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Revenue vs Leakage Trend - Only show if data available */}
+        {revenueTrendData.length > 0 && (
+          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 animate-slide-up">
+            <h3 className="text-lg font-bold text-black mb-4">Revenue vs Leakage Trend</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={revenueTrendData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" />
+                <XAxis dataKey="month" stroke="#000000" style={{ fontSize: '12px', fontWeight: '500' }} />
+                <YAxis stroke="#000000" tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}K`} style={{ fontSize: '12px', fontWeight: '500' }} />
+                <Tooltip 
+                  formatter={(value) => `₹${value.toLocaleString()}`}
+                  contentStyle={{ backgroundColor: '#000000', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '500' }}
+                  labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
+                />
+                <Legend wrapperStyle={{ color: '#000000', fontWeight: '500' }} />
+                <Line 
+                  type="monotone" 
+                  dataKey="revenue" 
+                  stroke="#000000" 
+                  strokeWidth={3} 
+                  dot={{ fill: '#000000', r: 6, strokeWidth: 2, stroke: '#ffffff' }} 
+                  name="Revenue"
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="leakage" 
+                  stroke="#DC2626" 
+                  strokeWidth={3} 
+                  dot={{ fill: '#DC2626', r: 6, strokeWidth: 2, stroke: '#ffffff' }} 
+                  name="Leakage"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
+        {/* Leakage by Category - Only show if data available */}
+        {leakageCategoryData.length > 0 && (
+          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 animate-slide-up">
+            <h3 className="text-lg font-bold text-black mb-4">Leakage by Category</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={leakageCategoryData} barSize={40}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" />
+                <XAxis dataKey="name" stroke="#000000" style={{ fontSize: '12px', fontWeight: '500' }} />
+                <YAxis stroke="#000000" tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}K`} style={{ fontSize: '12px', fontWeight: '500' }} />
+                <Tooltip 
+                  formatter={(value) => `₹${value.toLocaleString()}`}
+                  contentStyle={{ backgroundColor: '#000000', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '500' }}
+                  labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
+                />
+                <Bar dataKey="value" fill="#DC2626" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
+        {/* Leakage by Severity - Only show if data available */}
+        {leakageSeverityData.length > 0 && (
+          <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 animate-slide-up">
+            <h3 className="text-lg font-bold text-black mb-4">Leakage Distribution by Severity</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={leakageSeverityData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={true}
+                  label={(entry) => `${entry.name}: ${entry.value}`}
+                  outerRadius={90}
+                  innerRadius={0}
+                  fill="#000000"
+                  dataKey="value"
+                  strokeWidth={2}
+                  stroke="#ffffff"
+                >
+                  {leakageSeverityData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value) => `${value} issues`}
+                  contentStyle={{ backgroundColor: '#eeeeeeff', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '500' }}
+                  labelStyle={{ color: '#ffffffff', fontWeight: 'bold' }}
+                />
+                <Legend wrapperStyle={{ color: '#000000', fontWeight: '500' }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </div>
 
-      {/* Category Distribution Pie Chart */}
-      <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 animate-slide-up">
-        <h3 className="text-lg font-bold text-black mb-4">Revenue Distribution by Category</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={categoryData}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={(entry) => `${entry.name}: ${entry.percentage}%`}
-              outerRadius={100}
-              fill="#000000"
-              dataKey="value"
-            >
-              {categoryData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip 
-              formatter={(value) => `₹${value.toLocaleString()}`}
-              contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '8px' }}
-            />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+      {/* No Data Message */}
+      {!hasChartData && hasData && (
+        <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-8 text-center animate-slide-up">
+          <BiSolidBarChartAlt2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-bold text-black mb-2">No Chart Data Available</h3>
+          <p className="text-gray-600">
+            Upload more data files to generate detailed trend and category charts.
+          </p>
+        </div>
+      )}
 
       {/* Recent Alerts - Only show if there's data */}
       {hasData && data?.recentAlerts && data.recentAlerts.length > 0 && (

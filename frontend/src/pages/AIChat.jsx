@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { sendChatMessage } from '../services/api';
+import { IoChatbubbleEllipsesOutline } from 'react-icons/io5';
 
 const AIChat = () => {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: '👋 Hello! I\'m your AI Business Consultant. How can I help you today?',
+      content: 'Hello! I\'m your AI Business Consultant. How can I help you today?',
       timestamp: new Date().toISOString(),
     }
   ]);
@@ -48,7 +49,7 @@ const AIChat = () => {
     } catch (error) {
       const errorMessage = {
         role: 'assistant',
-        content: '❌ Sorry, I encountered an error. Please try again.',
+        content: 'Sorry, I encountered an error. Please try again.',
         timestamp: new Date().toISOString(),
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -61,8 +62,11 @@ const AIChat = () => {
     <div className="h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <h1 className="text-2xl font-bold text-gray-800">🤖 AI Business Consultant</h1>
-        <p className="text-sm text-gray-500">Ask me anything about your business</p>
+        <div className="flex items-center gap-2">
+          <IoChatbubbleEllipsesOutline className="w-7 h-7 text-gray-800" />
+          <h1 className="text-2xl font-bold text-gray-800">AI Business Consultant</h1>
+        </div>
+        <p className="text-sm text-gray-500 ml-9">Ask me anything about your business</p>
       </div>
 
       {/* Messages */}

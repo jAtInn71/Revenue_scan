@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getReports, generateReport, downloadReport } from '../services/api';
+import { MdAttachMoney, MdWarning, MdAssessment, MdTrendingUp, MdDescription } from 'react-icons/md';
 
 const Reports = () => {
   const [reports, setReports] = useState([]);
@@ -50,10 +51,10 @@ const Reports = () => {
   };
 
   const reportTypes = [
-    { name: 'Revenue Analysis', category: 'revenue', icon: '💰', color: 'bg-green-500' },
-    { name: 'Leakage Summary', category: 'leakage', icon: '⚠️', color: 'bg-red-500' },
-    { name: 'Risk Assessment', category: 'risk', icon: '📊', color: 'bg-brand-accent' },
-    { name: 'Performance Report', category: 'performance', icon: '📈', color: 'bg-blue-500' },
+    { name: 'Revenue Analysis', category: 'revenue', IconComponent: MdAttachMoney, color: 'bg-green-500' },
+    { name: 'Leakage Summary', category: 'leakage', IconComponent: MdWarning, color: 'bg-red-500' },
+    { name: 'Risk Assessment', category: 'risk', IconComponent: MdAssessment, color: 'bg-brand-accent' },
+    { name: 'Performance Report', category: 'performance', IconComponent: MdTrendingUp, color: 'bg-blue-500' },
   ];
 
   if (loading) {
@@ -82,7 +83,7 @@ const Reports = () => {
             className="bg-white rounded-xl shadow-md border border-slate-200 p-6 hover:shadow-lg card-hover text-left disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             <div className={`w-12 h-12 ${type.color} rounded-lg flex items-center justify-center mb-4 text-white`}>
-              <span className="text-2xl">{type.icon}</span>
+              <type.IconComponent className="w-7 h-7" />
             </div>
             <h3 className="text-base sm:text-lg font-bold text-black mb-2">{type.name}</h3>
             <p className="text-xs sm:text-sm text-slate-600">Generate {type.category} report</p>
@@ -100,7 +101,7 @@ const Reports = () => {
           {reports.length === 0 ? (
             <div className="p-8 sm:p-12 text-center">
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl sm:text-4xl">📄</span>
+                <MdDescription className="w-10 h-10 sm:w-12 sm:h-12 text-slate-400" />
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-black mb-2">No reports yet</h3>
               <p className="text-slate-600 text-sm sm:text-base">Generate your first report using the options above</p>
@@ -110,9 +111,9 @@ const Reports = () => {
               <div key={report.id} className="p-4 sm:p-6 hover:bg-slate-50 transition-all">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-black rounded-lg flex items-center justify-center flex-shrink-0 text-brand-accent">
-                      <span className="text-lg sm:text-2xl">📄</span>
-                    </div>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-black rounded-lg flex items-center justify-center flex-shrink-0 text-brand-accent">
+                    <MdDescription className="w-6 h-6 sm:w-7 sm:h-7" />
+                  </div>
                     <div className="min-w-0">
                       <h3 className="font-bold text-slate-900 truncate">{report.title}</h3>
                       <p className="text-xs sm:text-sm text-slate-600 mt-1">
