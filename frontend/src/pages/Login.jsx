@@ -143,9 +143,6 @@ const Login = ({ setIsAuthenticated }) => {
             </p>
           </div>
         </div>
-
-        {/* Features Section */}
-       
       </div>
     </div>
   );
