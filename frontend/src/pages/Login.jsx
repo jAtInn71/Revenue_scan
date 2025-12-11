@@ -115,18 +115,18 @@ const Login = ({ setIsAuthenticated }) => {
           {/* Demo Credentials */}
           <div className="mt-7 space-y-3">
             <p className="text-sm text-gray-600 font-semibold text-center">Demo Credentials:</p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => useDemoCredentials('admin@revenue.com', 'admin123')}
-                className="px-4 py-2 bg-black text-white text-xs font-semibold rounded-lg hover:bg-gray-900 hover:shadow-md border border-gray-300 transition-all duration-300 transform hover:scale-105 active:scale-95"
+                className="px-4 py-3 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-900 hover:shadow-md border border-gray-300 transition-all duration-300 transform hover:scale-105 active:scale-95"
               >
                 Admin
               </button>
               <button
                 type="button"
                 onClick={() => useDemoCredentials('user@revenue.com', 'user123')}
-                className="px-4 py-2 bg-gray-800 text-white text-xs font-semibold rounded-lg hover:bg-gray-700 hover:shadow-md border border-gray-300 transition-all duration-300 transform hover:scale-105 active:scale-95"
+                className="px-4 py-3 bg-gray-800 text-white text-sm font-semibold rounded-lg hover:bg-gray-700 hover:shadow-md border border-gray-300 transition-all duration-300 transform hover:scale-105 active:scale-95"
               >
                 User
               </button>

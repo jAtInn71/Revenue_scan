@@ -61,29 +61,29 @@ const AIChat = () => {
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
         <div className="flex items-center gap-2">
-          <IoChatbubbleEllipsesOutline className="w-7 h-7 text-gray-800" />
-          <h1 className="text-2xl font-bold text-gray-800">AI Business Consultant</h1>
+          <IoChatbubbleEllipsesOutline className="w-6 h-6 sm:w-7 sm:h-7 text-gray-800" />
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">AI Business Consultant</h1>
         </div>
-        <p className="text-sm text-gray-500 ml-9">Ask me anything about your business</p>
+        <p className="text-xs sm:text-sm text-gray-500 ml-8 sm:ml-9">Ask me anything about your business</p>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
         {messages.map((message, index) => (
           <div
             key={index}
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-3xl rounded-lg px-4 py-3 ${
+              className={`max-w-[85%] sm:max-w-3xl rounded-lg px-3 py-2 sm:px-4 sm:py-3 ${
                 message.role === 'user'
                   ? 'bg-blue-600 text-white'
                   : 'bg-white text-gray-800 shadow border border-gray-200'
               }`}
             >
-              <p className="whitespace-pre-wrap">{message.content}</p>
+              <p className="whitespace-pre-wrap text-sm sm:text-base">{message.content}</p>
               <div className="mt-1 text-xs opacity-60">
                 {new Date(message.timestamp).toLocaleTimeString()}
               </div>
@@ -107,21 +107,21 @@ const AIChat = () => {
       </div>
 
       {/* Input */}
-      <div className="bg-white border-t border-gray-200 px-6 py-4">
-        <div className="flex gap-3">
+      <div className="bg-white border-t border-gray-200 px-4 sm:px-6 py-4">
+        <div className="flex gap-2 sm:gap-3">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Ask me anything..."
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base touch-manipulation"
             disabled={loading}
           />
           <button
             onClick={handleSend}
             disabled={loading || !input.trim()}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="px-4 sm:px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-sm sm:text-base font-medium touch-manipulation"
           >
             Send
           </button>

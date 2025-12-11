@@ -82,3 +82,54 @@ code {
     @apply badge bg-amber-100 text-amber-700;
   }
 }
+
+/* Mobile optimizations */
+@layer utilities {
+  /* Touch-friendly buttons - minimum 44x44px tap target */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Prevent text selection on buttons */
+  button, .button {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Better mobile form inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Smooth scrolling */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  /* Mobile-friendly spacing */
+  @media (max-width: 768px) {
+    .mobile-safe-padding {
+      padding-left: max(1rem, env(safe-area-inset-left));
+      padding-right: max(1rem, env(safe-area-inset-right));
+    }
+  }
+}
+
+/* Responsive table improvements */
+@media (max-width: 768px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+

@@ -270,7 +270,174 @@ export default function AdminPanel() {
 
         {/* Users List */}
         <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
-          <div className="overflow-x-auto">
+          {/* Mobile Card View (hidden on md+) */}
+          <div className="md:hidden divide-y divide-gray-200">
+            {loading && filteredUsers.length === 0 ? (
+              <div className="px-6 py-12 text-center text-gray-500">Loading users...</div>
+            ) : filteredUsers.length === 0 ? (
+              <div className="px-6 py-12 text-center text-gray-500">No users found</div>
+            ) : (
+              filteredUsers.map((user) => (
+                <div key={user.id} className="p-4">
+                  {/* User Card */}
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="flex-shrink-0 h-12 w-12 bg-gradient-to-br from-gray-700 to-gray-500 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold">{user.full_name.charAt(0).toUpperCase()}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-semibold text-gray-900 truncate">{user.full_name}</h3>
+                      <p className="text-xs text-gray-600 truncate">{user.email}</p>
+                      {user.company_name && (
+                        <p className="text-xs text-gray-500 truncate mt-1">{user.company_name}</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Badges */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                      user.role === 'admin' 
+                        ? 'bg-gradient-to-r from-gray-800 to-gray-600 text-white' 
+                        : 'bg-gray-200 text-gray-800'
+                    }`}>
+                      {user.role}
+                    </span>
+                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                      user.is_active 
+                        ? 'bg-gray-900 text-white' 
+                        : 'bg-gray-300 text-gray-700'
+                    }`}>
+                      {user.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                    <span className="px-3 py-1 text-xs text-gray-600 bg-gray-100 rounded-full">
+                      Joined {new Date(user.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  
+                  {/* Actions */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => expandedUser === user.id ? setExpandedUser(null) : fetchUserDetails(user.id)}
+                      className="flex-1 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                    >
+                      {expandedUser === user.id ? 'Hide' : 'View'} Details
+                    </button>
+                    <button
+                      onClick={() => toggleUserRole(user.id, user.role)}
+                      className="px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                      title={`Change to ${user.role === 'admin' ? 'User' : 'Admin'}`}
+                    >
+                      <Shield className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={() => toggleUserActive(user.id)}
+                      className="px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                      title={user.is_active ? 'Deactivate' : 'Activate'}
+                    >
+                      <Users className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={() => deleteUser(user.id)}
+                      className="px-3 py-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Delete User"
+                    >
+                      <UserX className="h-5 w-5" />
+                    </button>
+                  </div>
+                  
+                  {/* Expanded Details (Mobile) */}
+                  {expandedUser === user.id && userDetails && (
+                    <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
+                      {/* Stats */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-gray-50 p-3 rounded-lg">
+                          <p className="text-xs text-gray-600">Analyses</p>
+                          <p className="text-xl font-bold text-gray-900">{userDetails.total_analyses}</p>
+                        </div>
+                        <div className="bg-gray-50 p-3 rounded-lg">
+                          <p className="text-xs text-gray-600">Uploads</p>
+                          <p className="text-xl font-bold text-gray-900">{userDetails.total_uploads}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Last Login */}
+                      <div className="text-xs text-gray-600">
+                        Last login: <span className="font-medium text-gray-900">
+                          {userDetails.last_login ? formatDate(userDetails.last_login) : 'Never'}
+                        </span>
+                      </div>
+                      
+                      {/* Tabs */}
+                      <div className="flex gap-2 border-b border-gray-200">
+                        <button
+                          onClick={() => setActiveTab('analyses')}
+                          className={`pb-2 px-3 text-sm font-medium border-b-2 transition-colors ${
+                            activeTab === 'analyses'
+                              ? 'border-gray-900 text-gray-900'
+                              : 'border-transparent text-gray-500'
+                          }`}
+                        >
+                          Analyses ({userAnalyses.length})
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('uploads')}
+                          className={`pb-2 px-3 text-sm font-medium border-b-2 transition-colors ${
+                            activeTab === 'uploads'
+                              ? 'border-gray-900 text-gray-900'
+                              : 'border-transparent text-gray-500'
+                          }`}
+                        >
+                          Uploads ({userUploads.length})
+                        </button>
+                      </div>
+                      
+                      {/* Tab Content */}
+                      {activeTab === 'analyses' && (
+                        <div className="space-y-2">
+                          {userAnalyses.length === 0 ? (
+                            <p className="text-center text-gray-500 py-4 text-sm">No analyses found</p>
+                          ) : (
+                            userAnalyses.map((analysis) => (
+                              <div key={analysis.id} className="bg-gray-50 p-3 rounded-lg text-xs space-y-1">
+                                <p className="font-semibold text-gray-900">{analysis.business_name}</p>
+                                <p className="text-gray-600">Industry: {analysis.industry}</p>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Revenue: <span className="font-semibold text-gray-900">{formatCurrency(analysis.total_revenue)}</span></span>
+                                  <span className="text-gray-600">Leakage: <span className="font-semibold text-red-600">{formatCurrency(analysis.leakage_amount)}</span></span>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      )}
+                      
+                      {activeTab === 'uploads' && (
+                        <div className="space-y-2">
+                          {userUploads.length === 0 ? (
+                            <p className="text-center text-gray-500 py-4 text-sm">No uploads found</p>
+                          ) : (
+                            userUploads.map((upload) => (
+                              <div key={upload.id} className="bg-gray-50 p-3 rounded-lg text-xs space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <FileText className="h-4 w-4 text-gray-600 flex-shrink-0" />
+                                  <p className="font-semibold text-gray-900 truncate">{upload.filename}</p>
+                                </div>
+                                <p className="text-gray-600">{upload.rows_count?.toLocaleString()} rows × {upload.columns_count} cols</p>
+                                <p className="text-gray-500">{formatDate(upload.created_at)}</p>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+          
+          {/* Desktop Table View (hidden on mobile) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gradient-to-r from-gray-800 to-gray-700">
                 <tr>

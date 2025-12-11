@@ -62,7 +62,7 @@ const NewBusinessAnalyze = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Business Name *</label>
               <input
                 {...register('business_name', { required: 'Required' })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                 placeholder="My Startup"
               />
               {errors.business_name && <p className="text-red-500 text-sm mt-1">{errors.business_name.message}</p>}
@@ -275,18 +275,18 @@ const NewBusinessAnalyze = () => {
         </div>
 
         {/* Submit */}
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-4">
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 bg-gradient-to-r from-black to-gray-900 text-white py-3 px-6 rounded-lg hover:from-gray-900 hover:to-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium transition-colors shadow-md"
+            className="flex-1 bg-gradient-to-r from-black to-gray-900 text-white py-4 px-6 rounded-lg hover:from-gray-900 hover:to-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium transition-colors shadow-md touch-manipulation text-base"
           >
             {loading ? 'Analyzing...' : 'Analyze Business'}
           </button>
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-6 py-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors touch-manipulation text-base"
           >
             Cancel
           </button>
