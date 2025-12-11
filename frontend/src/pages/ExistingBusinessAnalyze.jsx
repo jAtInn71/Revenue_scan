@@ -175,73 +175,73 @@ const ExistingBusinessAnalyze = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Refunds Amount ($)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Refunds Amount (₹)</label>
               <input
                 type="number"
                 step="0.01"
                 {...register('refunds_amount')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="5000"
+                placeholder="50000"
                 defaultValue="0"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Returns Amount ($)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Returns Amount (₹)</label>
               <input
                 type="number"
                 step="0.01"
                 {...register('returns_amount')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="3000"
+                placeholder="30000"
                 defaultValue="0"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Discounts Given ($)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Discounts Given (₹)</label>
               <input
                 type="number"
                 step="0.01"
                 {...register('discounts_given')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="12000"
+                placeholder="100000"
                 defaultValue="0"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Uncollected Payments ($)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Uncollected Payments (₹)</label>
               <input
                 type="number"
                 step="0.01"
                 {...register('uncollected_payments')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="2000"
+                placeholder="75000"
                 defaultValue="0"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Inventory Shrinkage ($)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Inventory Shrinkage (₹)</label>
               <input
                 type="number"
                 step="0.01"
                 {...register('inventory_shrinkage')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="4000"
+                placeholder="25000"
                 defaultValue="0"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Unrecorded Sales ($)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Unrecorded Sales (₹)</label>
               <input
                 type="number"
                 step="0.01"
                 {...register('unrecorded_sales')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="1500"
+                placeholder="40000"
                 defaultValue="0"
               />
             </div>

@@ -152,35 +152,35 @@ const NewBusinessAnalyze = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Expected Monthly Revenue ($) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Expected Monthly Revenue (₹) *</label>
               <input
                 type="number"
                 step="0.01"
                 {...register('expected_monthly_revenue', { required: 'Required', min: 1 })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="50000"
+                placeholder="500000"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Product Price ($) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Product Price (₹) *</label>
               <input
                 type="number"
                 step="0.01"
                 {...register('product_price', { required: 'Required', min: 0 })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="99.99"
+                placeholder="999.00"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Cost per Unit ($) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Cost per Unit (₹) *</label>
               <input
                 type="number"
                 step="0.01"
                 {...register('product_cost_per_unit', { required: 'Required', min: 0 })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="40.00"
+                placeholder="400.00"
               />
             </div>
 
@@ -195,13 +195,13 @@ const NewBusinessAnalyze = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fixed Monthly Costs ($) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Fixed Monthly Costs (₹) *</label>
               <input
                 type="number"
                 step="0.01"
                 {...register('fixed_monthly_costs', { required: 'Required', min: 0 })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="10000"
+                placeholder="100000"
               />
             </div>
 
